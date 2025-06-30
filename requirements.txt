@@ -12,3 +12,4 @@ email-validator
 matplotlib
 pytz
 werkzeug
+gunicorn
