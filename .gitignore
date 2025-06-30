@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Flask specific
+instance/
+.flaskenv
+
+# Data files (important for your app)
+data/
+*.json # This will ignore all .json files in the data/ directory.
+       # If you want to keep some .json files (e.g., configuration),
+       # you'll need to be more specific or use git add -f for them.
+       # For history and temporary data, ignoring is good.
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log

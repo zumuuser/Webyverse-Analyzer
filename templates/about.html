@@ -1,0 +1,1107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>About - Webyverse Domain Analyzer</title>
+  <style>
+    /* Root colors and fonts - Matching history.html */
+    :root {
+      --container-light: #ffffff;
+      --container-dark: #1e1e1e;
+      --text-light: #212529;
+      --text-dark: #e4e6eb;
+      --accent: #007bff;
+      --accent-secondary: #6f42c1;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --info: #17a2b8;
+      --card-light: #f8f9fa;
+      --card-dark: #252525;
+      --bg-dark: #1a1a1a;
+      --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-success: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      --gradient-danger: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+      --gradient-info: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+    }
+
+    /* Matching animated background from history.html */
+    body {
+      background: linear-gradient(-45deg,
+        #ffffff,
+        #dfe9f3,
+        #c0d3f2,
+        #ffffff
+      );
+      background-size: 300% 300%;
+      animation: bgMove 10s ease-in-out infinite;
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    
+    .dark-theme {
+      background: linear-gradient(-45deg,
+        #1a1a1a, #202533, #2b2f3a, #1f1f1f);
+      background-size: 300% 300%;
+      animation: bgMove 10s ease-in-out infinite;
+      color: var(--text-dark);
+    }
+    
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Matching starfield effect for dark theme */
+    .dark-theme::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-image: radial-gradient(white 0.6px, transparent 0.6px);
+      background-size: 150px 150px;
+      background-position: 0 0;
+      opacity: 0.08;
+      animation: twinkle 3s infinite ease-in-out alternate;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.03; transform: translateY(0); }
+      50% { opacity: 0.12; transform: translateY(-1px); }
+      100% { opacity: 0.06; transform: translateY(0); }
+    }
+
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      display: none;
+    }
+    .dark-theme #starfield {
+      display: block;
+    }
+
+    /* Main container - Matching history.html styling */
+    #app {
+      max-width: 900px;
+      margin: 30px auto;
+      background: var(--container-light);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+      transition: all 0.4s ease;
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .dark-theme #app {
+      background: var(--container-dark);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Matching navigation */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      border-bottom: 2px solid rgba(0,123,255,0.1);
+      padding-bottom: 20px;
+    }
+    .dark-theme .navbar {
+      border-color: rgba(0,123,255,0.2);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 10px 16px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-theme .nav-links a {
+      color: var(--text-dark);
+    }
+    .nav-links a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-primary);
+      transition: left 0.3s ease;
+      z-index: -1;
+    }
+    .nav-links a:hover::before {
+      left: 0;
+    }
+    .nav-links a:hover {
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+    }
+    
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 900;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    /* Floating theme toggle - Matching history.html */
+    .floating-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--gradient-primary);
+      color: white;
+      padding: 16px 20px;
+      font-size: 1.4rem;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(0,123,255,0.3);
+      z-index: 9999;
+      transition: all 0.3s ease;
+    }
+    .floating-toggle:hover {
+      transform: scale(1.1) rotate(10deg);
+      box-shadow: 0 12px 40px rgba(0,123,255,0.4);
+    }
+
+    /* Matching hero section */
+    .hero {
+      text-align: center;
+      margin-bottom: 45px;
+      position: relative;
+      padding: 45px 0;
+    }
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      position: relative;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 680px;
+      margin: 0 auto 30px;
+      color: var(--text-light);
+      opacity: 0.8;
+      line-height: 1.6;
+    }
+    .dark-theme .hero p {
+      color: var(--text-dark);
+    }
+
+    /* Section styling - Enhanced */
+    .section {
+      margin-bottom: 40px;
+      background: var(--card-light);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+      border: 2px solid rgba(0,123,255,0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+    .dark-theme .section {
+      background: var(--card-dark);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border-color: rgba(0,123,255,0.2);
+    }
+    
+    .section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    .section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.15);
+    }
+
+    .section h2 {
+      font-weight: 900;
+      font-size: 1.9rem;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      border-bottom: 2px solid rgba(0,123,255,0.1);
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .dark-theme .section h2 {
+      border-color: rgba(0,123,255,0.2);
+    }
+
+    /* Enhanced feature list */
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    
+    .feature-list li {
+      padding: 20px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 16px;
+      border: 2px solid rgba(0,123,255,0.1);
+      position: relative;
+      padding-left: 60px;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    .dark-theme .feature-list li {
+      background: rgba(0,0,0,0.2);
+      border-color: rgba(0,123,255,0.2);
+    }
+    
+    .feature-list li:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      border-color: rgba(0,123,255,0.3);
+    }
+    
+    .feature-list li::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      background: var(--gradient-success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feature-list li::after {
+      content: '✓';
+      position: absolute;
+      left: 26px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    /* Enhanced team section */
+    .team-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+    
+    .team-member {
+      background: rgba(255,255,255,0.5);
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+      border: 2px solid rgba(0,123,255,0.1);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-theme .team-member {
+      background: rgba(0,0,0,0.2);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border-color: rgba(0,123,255,0.2);
+    }
+    
+    .team-member::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-info);
+    }
+    
+    .team-member:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+      border-color: rgba(0,123,255,0.3);
+    }
+    
+    .team-member h3 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: var(--gradient-info);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .team-member p {
+      margin-bottom: 12px;
+      color: var(--text-light);
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    .dark-theme .team-member p {
+      color: var(--text-dark);
+    }
+    
+    .team-member p:first-of-type {
+      font-weight: 700;
+      background: var(--gradient-success);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 1.1rem;
+    }
+
+    /* Enhanced timeline */
+    .timeline {
+      position: relative;
+      margin: 40px 0;
+      padding-left: 40px;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--gradient-primary);
+      border-radius: 2px;
+    }
+    
+    .milestone {
+      position: relative;
+      padding-bottom: 35px;
+      padding-left: 40px;
+    }
+    
+    .milestone::before {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      z-index: 1;
+      box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+    }
+    
+    .milestone-content {
+      background: rgba(255,255,255,0.5);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 2px solid rgba(0,123,255,0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-theme .milestone-content {
+      background: rgba(0,0,0,0.2);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+      border-color: rgba(0,123,255,0.2);
+    }
+    
+    .milestone-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-success);
+    }
+    
+    .milestone-content:hover {
+      transform: translateX(15px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      border-color: rgba(0,123,255,0.3);
+    }
+    
+    .milestone-date {
+      font-weight: 800;
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      background: var(--gradient-success);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .milestone p {
+      color: var(--text-light);
+      opacity: 0.9;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .dark-theme .milestone p {
+      color: var(--text-dark);
+    }
+
+    /* Matching footer */
+    .footer {
+      background: var(--card-light);
+      margin-top: 80px;
+      padding: 60px 0 40px;
+      border-radius: 20px 20px 0 0;
+      border: 2px solid rgba(0,123,255,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-theme .footer {
+      background: var(--card-dark);
+      border-color: rgba(0,123,255,0.2);
+    }
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 30px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-section h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-links li {
+      margin-bottom: 12px;
+    }
+
+    .footer-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+    }
+    .dark-theme .footer-links a {
+      color: var(--text-dark);
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+      transform: translateX(5px);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 30px;
+      border-top: 2px solid rgba(0,123,255,0.1);
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    .dark-theme .footer-bottom {
+      border-color: rgba(0,123,255,0.2);
+      color: var(--text-dark);
+    }
+
+    .footer-logo {
+      font-size: 1.8rem;
+      font-weight: 900;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-description {
+      color: var(--text-light);
+      opacity: 0.8;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .dark-theme .footer-description {
+      color: var(--text-dark);
+    }
+
+    /* Enhanced responsiveness */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      
+      .nav-links {
+        gap: 12px;
+      }
+      
+      .nav-links a {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+      }
+      
+      #app {
+        margin: 15px auto;
+        padding: 25px 15px;
+      }
+      
+      .section {
+        padding: 25px 15px;
+      }
+
+      .feature-list {
+        grid-template-columns: 1fr;
+      }
+
+      .team-container {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline {
+        padding-left: 25px;
+      }
+
+      .timeline::before {
+        left: 12px;
+      }
+
+      .milestone {
+        padding-left: 25px;
+      }
+
+      .milestone::before {
+        left: -6px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      
+      .footer-container {
+        padding: 0 20px;
+      }
+      
+      .footer {
+        padding: 40px 0 30px;
+      }
+    }
+
+    /* Loading animations */
+    @keyframes slideInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .section { 
+      animation: slideInUp 0.6s ease-out; 
+    }
+    .hero { 
+      animation: slideInUp 0.4s ease-out; 
+    }
+    .navbar { 
+      animation: slideInUp 0.2s ease-out; 
+    }
+    .team-member {
+      animation: slideInUp 0.8s ease-out;
+    }
+    .milestone {
+      animation: slideInUp 1s ease-out;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<button class="floating-toggle" id="themeToggle" aria-label="Toggle dark/light theme">
+  <span class="material-icons">dark_mode</span>
+</button>
+
+<div id="app">
+  <div class="navbar">
+    <a class="logo" href="/">
+      <span class="material-icons">analytics</span>
+      Webyverse
+    </a>
+    <div class="nav-links">
+      <a href="/">
+        <span class="material-icons">domain</span> Domain Analyzer
+      </a>
+      <a href="http://webyverse.net/email-verify" target="_blank" rel="noopener" aria-label="Main Email analyzer">
+        <span class="material-icons">verified_user</span> Email
+      </a>
+      <a href="/phone-lookup" aria-label="Phone lookup tool">
+        <span class="material-icons">phone</span> Phone Lookup
+      </a>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>About Webyverse Domain Analyzer</h1>
+    <p>Empowering website owners, developers, and digital marketers with comprehensive domain analysis tools that deliver actionable insights for better web performance and security.</p>
+  </div>
+
+  <div class="section">
+    <h2>
+      <span class="material-icons">rocket_launch</span>
+      Our Mission
+    </h2>
+    <p>Webyverse is dedicated to providing comprehensive domain analysis tools that empower website owners, developers, and digital marketers to make data-driven decisions. Our mission is to simplify the complex world of web infrastructure analysis through intuitive tools that deliver actionable insights.</p>
+    <p>With our domain analyzer, users can quickly evaluate domain health, security posture, performance metrics, and SEO factors - all in one centralized dashboard.</p>
+  </div>
+
+  <div class="section">
+    <h2>
+      <span class="material-icons">star</span>
+      Key Features
+    </h2>
+    <ul class="feature-list">
+      <li>Comprehensive domain health checks and security analysis</li>
+      <li>WHOIS information retrieval with privacy protection detection</li>
+      <li>SSL certificate validation and security assessment</li>
+      <li>DNS record analysis and configuration recommendations</li>
+      <li>Page speed insights with optimization suggestions</li>
+      <li>Mobile-friendliness evaluation</li>
+      <li>SEO analysis with keyword opportunities</li>
+      <li>Backlink profile overview</li>
+      <li>Social media presence analysis</li>
+      <li>Historical domain data visualization</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>
+      <span class="material-icons">group</span>
+      Our Team
+    </h2>
+    <p>Webyverse was founded by a team of web developers and SEO specialists who understand the challenges of managing digital assets in today's complex web ecosystem.</p>
+    <div class="team-container">
+      <div class="team-member">
+        <h3>
+          <span class="material-icons">person</span>
+          Alex Martinez
+        </h3>
+        <p>Founder & Lead Developer</p>
+        <p>With over 15 years of experience in web development and infrastructure management, Alex leads our technical development initiatives and ensures our tools meet the highest standards of accuracy and reliability.</p>
+      </div>
+      <div class="team-member">
+        <h3>
+          <span class="material-icons">trending_up</span>
+          Sarah Johnson
+        </h3>
+        <p>SEO & Analytics Expert</p>
+        <p>Sarah brings her extensive knowledge of search engine optimization and data analysis to help shape our domain analysis algorithms and ensure they provide meaningful insights for SEO professionals.</p>
+      </div>
+      <div class="team-member">
+        <h3>
+          <span class="material-icons">security</span>
+          Michael Lee
+        </h3>
+        <p>Security Specialist</p>
+        <p>Michael's background in cybersecurity ensures that our security assessments meet the highest industry standards and provide accurate threat detection and vulnerability analysis.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>
+      <span class="material-icons">timeline</span>
+      Our Journey
+    </h2>
+    <div class="timeline">
+      <div class="milestone">
+        <div class="milestone-content">
+          <div class="milestone-date">
+            <span class="material-icons">lightbulb</span>
+            2021
+          </div>
+          <p>Webyverse concept was born out of frustration with fragmented domain analysis tools and the need for a comprehensive, user-friendly solution.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-content">
+          <div class="milestone-date">
+            <span class="material-icons">code</span>
+            2022
+          </div>
+          <p>First beta version released with basic domain health checks, SSL analysis, and WHOIS lookup functionality.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-content">
+          <div class="milestone-date">
+            <span class="material-icons">trending_up</span>
+            2023
+          </div>
+          <p>Expanded feature set to include comprehensive SEO analysis, performance metrics, and mobile optimization insights.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-content">
+          <div class="milestone-date">
+            <span class="material-icons">dashboard</span>
+            2024
+          </div>
+          <p>Launched comprehensive analytics dashboard with historical data tracking, trend analysis, and advanced reporting features.</p>
+        </div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-content">
+          <div class="milestone-date">
+            <span class="material-icons">auto_awesome</span>
+            2025
+          </div>
+          <p>Continuing to innovate with AI-powered domain insights, automated recommendations, and enhanced security analysis capabilities.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-grid">
+      <!-- Brand Section -->
+      <div class="footer-section">
+        <div class="footer-logo">
+          <span class="material-icons">analytics</span>
+          Webyverse
+        </div>
+        <p class="footer-description">
+          Comprehensive web analysis tools for domains, emails, and phone numbers. 
+          Get detailed insights and security analysis for better online presence.
+        </p>
+      </div>
+
+      <!-- Tools Section -->
+      <div class="footer-section">
+        <h3>
+          <span class="material-icons">build</span>
+          Analysis Tools
+        </h3>
+        <ul class="footer-links">
+          <li><a href="/"><span class="material-icons">domain</span>Domain Analyzer</a></li>
+          <li><a href="/email-verify"><span class="material-icons">verified_user</span>Email Verification</a></li>
+          <li><a href="/phone-lookup"><span class="material-icons">phone</span>Phone Lookup</a></li>
+        </ul>
+      </div>
+
+      <!-- History & Reports -->
+      <div class="footer-section">
+        <h3>
+          <span class="material-icons">history</span>
+          History & Reports
+        </h3>
+        <ul class="footer-links">
+          <li><a href="/history"><span class="material-icons">timeline</span>Domain History</a></li>
+          <li><a href="/emailhistory"><span class="material-icons">email</span>Email History</a></li>
+                   <li><a href="/phonehistory"><span class="material-icons">phone_callback</span>Phone History</a></li>
+        </ul>
+      </div>
+
+      <!-- Documentation -->
+      <div class="footer-section">
+        <h3>
+          <span class="material-icons">menu_book</span>
+          Documentation
+        </h3>
+        <ul class="footer-links">
+          <li><a href="/documentation"><span class="material-icons">description</span>Domain Docs</a></li>
+          <li><a href="/emaildocs"><span class="material-icons">mail_outline</span>Email Docs</a></li>
+          <li><a href="/phonedocs"><span class="material-icons">phone_in_talk</span>Phone Docs</a></li>
+        </ul>
+      </div>
+
+      <!-- Company Info -->
+      <div class="footer-section">
+        <h3>
+          <span class="material-icons">business</span>
+          Company
+        </h3>
+        <ul class="footer-links">
+          <li><a href="/about"><span class="material-icons">info</span>About Us</a></li>
+          <li><a href="/contact"><span class="material-icons">contact_mail</span>Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2025 Webyverse. All rights reserved. | Advanced Web Analysis Platform</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Enhanced theme toggle - Matching history.html
+  const body = document.body;
+  const toggle = document.getElementById('themeToggle');
+
+  function updateThemeToggle() {
+    const isDark = body.classList.contains('dark-theme');
+    const icon = toggle.querySelector('.material-icons');
+    icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+    localStorage.setItem('darkMode', isDark);
+  }
+
+  toggle.addEventListener('click', () => {
+    body.classList.toggle('dark-theme');
+    updateThemeToggle();
+    
+    toggle.style.transform = 'scale(0.8) rotate(180deg)';
+    setTimeout(() => {
+      toggle.style.transform = 'scale(1) rotate(0deg)';
+    }, 200);
+  });
+
+  // Initialize theme from localStorage
+  if (localStorage.getItem('darkMode') === 'true') {
+    body.classList.add('dark-theme');
+  }
+  updateThemeToggle();
+
+  // Initialize page animations
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add staggered animations to existing elements
+    const style = document.createElement('style');
+    style.textContent = `
+      .section { 
+        animation: slideInUp 0.6s ease-out; 
+      }
+      .hero { 
+        animation: slideInUp 0.4s ease-out; 
+      }
+      .navbar { 
+        animation: slideInUp 0.2s ease-out; 
+      }
+      .team-member {
+        animation: slideInUp 0.8s ease-out;
+        animation-delay: 0.1s;
+      }
+      .milestone {
+        animation: slideInUp 1s ease-out;
+        animation-delay: 0.2s;
+      }
+    `;
+    document.head.appendChild(style);
+  });
+</script>
+
+<!-- Enhanced Starfield Animation - Matching history.html -->
+<script>
+(function() {
+  const canvas = document.getElementById("starfield");
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext("2d");
+  let stars = [], w, h, animationId;
+  let lastTime = 0;
+  const targetFPS = 60;
+  const frameTime = 1000 / targetFPS;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    stars = [];
+    
+    for (let i = 0; i < 250; i++) {
+      stars.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.5 + 0.3,
+        dx: 0.02 + Math.random() * 0.05,
+        dy: (Math.random() - 0.5) * 0.03,
+        opacity: Math.random() * 0.6 + 0.2,
+        twinkle: Math.random() * 0.02 + 0.01,
+        twinklePhase: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function draw(currentTime) {
+    if (currentTime - lastTime < frameTime) {
+      animationId = requestAnimationFrame(draw);
+      return;
+    }
+    
+    if (!ctx || !document.body.classList.contains('dark-theme')) {
+      animationId = requestAnimationFrame(draw);
+      return;
+    }
+    
+    lastTime = currentTime;
+    ctx.clearRect(0, 0, w, h);
+    
+    stars.forEach(s => {
+      s.twinklePhase += s.twinkle;
+      const twinkleOpacity = s.opacity + Math.sin(s.twinklePhase) * 0.3;
+      
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${Math.max(0, Math.min(1, twinkleOpacity))})`;
+      ctx.fill();
+
+      s.x += s.dx;
+      s.y += s.dy;
+
+      if (s.x > w + s.r) s.x = -s.r;
+      if (s.x < -s.r) s.x = w + s.r;
+      if (s.y > h + s.r) s.y = -s.r;
+      if (s.y < -s.r) s.y = h + s.r;
+    });
+    
+    animationId = requestAnimationFrame(draw);
+  }
+
+  function startAnimation() {
+    if (animationId) cancelAnimationFrame(animationId);
+    animationId = requestAnimationFrame(draw);
+  }
+
+  function stopAnimation() {
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+    if (ctx) ctx.clearRect(0, 0, w, h);
+  }
+
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(resize, 250);
+  });
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        if (document.body.classList.contains('dark-theme')) {
+          startAnimation();
+        } else {
+          stopAnimation();
+        }
+      }
+    });
+  });
+
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
+
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      stopAnimation();
+    } else if (document.body.classList.contains('dark-theme')) {
+      startAnimation();
+    }
+  });
+
+  resize();
+  if (document.body.classList.contains('dark-theme')) {
+    startAnimation();
+  }
+})();
+</script>
+
+</body>
+</html>

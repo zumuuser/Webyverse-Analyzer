@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Documentation - Webyverse Domain Analyzer</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+    <style>
+        /* Root colors and fonts - Enhanced theme system from email_verify.html */
+        :root {
+            --container-light: #ffffff;
+            --container-dark: #1e1e1e;
+            --text-light: #212529;
+            --text-dark: #e4e6eb;
+            --accent: #007bff;
+            --accent-secondary: #6f42c1;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --card-light: #f8f9fa;
+            --card-dark: #252525;
+            --bg-dark: #1a1a1a;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            --gradient-danger: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            --gradient-info: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+        }
+
+        /* Enhanced animated background - matching email_verify.html */
+        body {
+            background: linear-gradient(-45deg,
+                #ffffff,
+                #dfe9f3,
+                #c0d3f2,
+                #ffffff
+            );
+            background-size: 300% 300%;
+            animation: bgMove 10s ease-in-out infinite;
+            font-family: 'Sora', sans-serif;
+            font-size: 18px;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: var(--text-light); /* Default text color */
+        }
+
+        .dark-theme {
+            background: linear-gradient(-45deg,
+                #1a1a1a, #202533, #2b2f3a, #1f1f1f);
+            background-size: 300% 300%;
+            animation: bgMove 10s ease-in-out infinite;
+            color: var(--text-dark); /* Dark theme text color */
+        }
+
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Enhanced starfield effect for dark theme */
+        .dark-theme::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-image: radial-gradient(white 0.6px, transparent 0.6px);
+            background-size: 150px 150px;
+            background-position: 0 0;
+            opacity: 0.08;
+            animation: twinkle 3s infinite ease-in-out alternate;
+            pointer-events: none;
+            z-index: 0;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.03; transform: translateY(0); }
+            50% { opacity: 0.12; transform: translateY(-1px); }
+            100% { opacity: 0.06; transform: translateY(0); }
+        }
+
+        #starfield {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            display: none; /* Hidden by default, shown by JS for dark theme */
+        }
+        .dark-theme #starfield {
+            display: block;
+        }
+
+        /* Main container with enhanced styling - matching email_verify.html */
+        #app {
+            max-width: 1200px; /* Adjusted for documentation content */
+            margin: 30px auto;
+            background: var(--container-light);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .dark-theme #app {
+            background: var(--container-dark);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Enhanced navigation - matching email_verify.html */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid rgba(0,123,255,0.1);
+            padding-bottom: 20px;
+        }
+        .dark-theme .navbar {
+            border-color: rgba(0,123,255,0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 10px 16px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+        .dark-theme .nav-links a {
+            color: var(--text-dark);
+        }
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+        .nav-links a:hover::before {
+            left: 0;
+        }
+        .nav-links a:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+        }
+
+        .logo {
+            font-size: 1.9rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        /* Floating theme toggle - matching email_verify.html */
+        .floating-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 16px 20px;
+            font-size: 1.4rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0,123,255,0.3);
+            z-index: 9999;
+            transition: all 0.3s ease;
+        }
+        .floating-toggle:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 12px 40px rgba(0,123,255,0.4);
+        }
+
+        /* Enhanced hero section - matching email_verify.html */
+        .hero {
+            text-align: center;
+            margin-bottom: 45px;
+            position: relative;
+            padding: 45px 0;
+        }
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+            position: relative;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px; /* Adjusted for documentation */
+            margin: 0 auto 30px;
+            color: var(--text-light);
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        .dark-theme .hero p {
+            color: var(--text-dark);
+        }
+
+        /* Documentation Specific Styles */
+        .doc-container {
+            display: grid;
+            grid-template-columns: 300px 1fr; /* Wider sidebar */
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .sidebar {
+            background: var(--card-light);
+            padding: 25px;
+            border-radius: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,123,255,0.1);
+            transition: all 0.4s ease;
+        }
+        .dark-theme .sidebar {
+            background: var(--card-dark);
+            border-color: rgba(0,123,255,0.2);
+        }
+
+        .sidebar h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0,123,255,0.1);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        .dark-theme .sidebar a {
+            color: var(--text-dark);
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.2);
+        }
+
+        .sidebar .sub-nav {
+            list-style: none;
+            padding-left: 25px;
+            margin-top: 5px;
+            border-left: 2px solid rgba(0,123,255,0.1);
+            margin-left: 10px;
+        }
+
+        .sidebar .sub-nav a {
+            font-size: 0.85rem;
+            padding: 8px 10px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .dark-theme .sidebar .sub-nav a {
+            color: #aaa;
+        }
+        .sidebar .sub-nav a:hover, .sidebar .sub-nav a.active {
+            background: rgba(0,123,255,0.1);
+            color: var(--accent);
+            box-shadow: none;
+        }
+
+        .sidebar-search {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(0,123,255,0.1);
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            background: var(--container-light);
+            color: var(--text-light);
+        }
+        .dark-theme .sidebar-search {
+            background: var(--card-dark);
+            border-color: rgba(0,123,255,0.2);
+            color: var(--text-dark);
+        }
+        .sidebar-search:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.1);
+        }
+
+        .content {
+            background: var(--card-light);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,123,255,0.1);
+            transition: all 0.4s ease;
+        }
+        .dark-theme .content {
+            background: var(--card-dark);
+            border-color: rgba(0,123,255,0.2);
+        }
+
+        .section {
+            margin-bottom: 50px;
+            scroll-margin-top: 80px; /* Adjusted for sticky header/navbar */
+        }
+
+        .section h2 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid rgba(0,123,255,0.1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .section h2::before {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--success);
+        }
+
+        .section h3 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--accent);
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dark-theme .section h3 {
+            color: var(--accent);
+        }
+
+        .section h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-top: 25px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dark-theme .section h4 {
+            color: var(--text-dark);
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+            color: var(--text-light);
+        }
+        .dark-theme .section p {
+            color: var(--text-dark);
+        }
+
+        .section ul, .section ol {
+            margin-bottom: 20px;
+            padding-left: 25px;
+            color: var(--text-light);
+        }
+        .dark-theme .section ul, .dark-theme .section ol {
+            color: var(--text-dark);
+        }
+
+        .section li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        /* Info Cards (Feature, Score, Metric) */
+        .feature-grid, .score-range {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .feature-card, .score-card, .metric-card {
+            background: var(--card-light);
+            padding: 25px;
+            border-radius: 16px;
+            border: 2px solid rgba(0,123,255,0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .dark-theme .feature-card, .dark-theme .score-card, .dark-theme .metric-card {
+            background: var(--card-dark);
+            border-color: rgba(0,123,255,0.2);
+        }
+        .feature-card:hover, .score-card:hover, .metric-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .feature-title, .score-title, .metric-title {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .score-card {
+            border-left: 8px solid;
+        }
+        .score-excellent { border-left-color: var(--success); }
+        .score-good { border-left-color: #28a745; } /* Using direct color for slight variation */
+        .score-average { border-left-color: var(--warning); }
+        .score-poor { border-left-color: var(--danger); }
+
+        .score-number {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent); /* Default, overridden by specific score classes */
+        }
+        .score-excellent .score-number { color: var(--success); }
+        .score-good .score-number { color: #28a745; }
+        .score-average .score-number { color: var(--warning); }
+        .score-poor .score-number { color: var(--danger); }
+
+        .score-description {
+            font-size: 0.95rem;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+        .dark-theme .score-description {
+            color: #aaa;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: #f0f2f5;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Fira Code', 'Courier New', monospace; /* Fira Code for ligatures */
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 20px 0;
+            position: relative;
+            cursor: pointer; /* Indicate click to copy */
+            transition: background 0.2s ease;
+        }
+        .dark-theme .code-block {
+            background: #2d2d2d;
+            border-color: #444;
+            color: #f8f8f2;
+        }
+        .code-block::before {
+            content: 'Code';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 0.7rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .code-block:active {
+            background: rgba(40, 167, 69, 0.15); /* Visual feedback on copy */
+        }
+        .dark-theme .code-block:active {
+            background: rgba(40, 167, 69, 0.25);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 18px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 6px solid;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+        .alert strong {
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .alert::before {
+            font-family: 'Material Icons';
+            font-size: 1.8rem;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .alert-info {
+            background: rgba(23, 162, 184, 0.1);
+            border-left-color: var(--info);
+            color: var(--info);
+        }
+        .alert-info::before { content: 'info'; }
+
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: var(--warning);
+            color: #856404; /* Darker color for contrast */
+        }
+        .dark-theme .alert-warning { color: var(--warning); }
+        .alert-warning::before { content: 'warning'; }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.1);
+            border-left-color: var(--success);
+            color: var(--success);
+        }
+        .alert-success::before { content: 'check_circle'; }
+
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.1);
+            border-left-color: var(--danger);
+            color: var(--danger);
+        }
+        .alert-danger::before { content: 'error'; }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: var(--container-light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        }
+        .dark-theme .table {
+            background: var(--container-dark);
+        }
+
+        .table th, .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            color: var(--text-light);
+        }
+        .dark-theme .table th, .dark-theme .table td {
+            border-bottom-color: #333;
+            color: var(--text-dark);
+        }
+
+        .table th {
+            background: var(--accent);
+            color: white;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table tr:hover {
+            background: rgba(0, 123, 255, 0.05);
+        }
+        .dark-theme .table tr:hover {
+            background: rgba(0, 123, 255, 0.1);
+        }
+
+        .table .score-cell {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .table .good-score { color: var(--success); }
+        .table .average-score { color: var(--warning); }
+        .table .poor-score { color: var(--danger); }
+
+        /* Progress Bars */
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .dark-theme .progress-bar {
+            background: #444;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+        .progress-excellent { background: var(--gradient-success); }
+        .progress-good { background: linear-gradient(90deg, #28a745, var(--success)); }
+        .progress-average { background: var(--gradient-warning); } /* Using direct gradient */
+        .progress-poor { background: var(--gradient-danger); } /* Using direct gradient */
+
+        /* Expandable Sections */
+        .expandable-section {
+            border: 2px solid rgba(0,123,255,0.1);
+            border-radius: 16px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+        .dark-theme .expandable-section {
+            border-color: rgba(0,123,255,0.2);
+        }
+
+        .expandable-header {
+            background: var(--card-light);
+            padding: 18px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+        .dark-theme .expandable-header {
+            background: var(--card-dark);
+        }
+        .expandable-header:hover {
+            background: rgba(0,123,255,0.05);
+        }
+        .dark-theme .expandable-header:hover {
+            background: rgba(0,123,255,0.1);
+        }
+
+        .expandable-content {
+            padding: 20px 25px;
+            background: var(--container-light);
+            display: none;
+            border-top: 1px solid rgba(0,123,255,0.1);
+        }
+        .dark-theme .expandable-content {
+            background: var(--container-dark);
+            border-color: rgba(0,123,255,0.2);
+        }
+        .expandable-content.active {
+            display: block;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s ease;
+        }
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-good { background: rgba(40, 167, 69, 0.1); color: var(--success); }
+        .status-warning { background: rgba(255, 193, 7, 0.1); color: var(--warning); }
+        .status-danger { background: rgba(220, 53, 69, 0.1); color: var(--danger); }
+        .status-info { background: rgba(23, 162, 184, 0.1); color: var(--info); }
+
+        /* Quick Tips */
+        .quick-tip {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(0, 123, 255, 0.05));
+            border: 2px solid rgba(0, 123, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 25px 0;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+        .quick-tip::before {
+            font-family: 'Material Icons';
+            content: 'lightbulb';
+            font-size: 1.8rem;
+            color: var(--accent);
+            line-height: 1;
+            margin-top: 2px;
+        }
+        .quick-tip-title {
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        .quick-tip ul {
+            list-style: disc;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        .quick-tip ol {
+            list-style: decimal;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        .quick-tip li {
+            margin-bottom: 5px;
+        }
+
+        /* Footer Styles (from email_verify.html) */
+        .footer {
+            background: var(--card-light);
+            margin-top: 80px;
+            padding: 60px 0 40px;
+            border-radius: 20px 20px 0 0;
+            border: 2px solid rgba(0,123,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .dark-theme .footer {
+            background: var(--card-dark);
+            border-color: rgba(0,123,255,0.2);
+        }
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+        }
+        .dark-theme .footer-links a {
+            color: var(--text-dark);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 2px solid rgba(0,123,255,0.1);
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        .dark-theme .footer-bottom {
+            border-color: rgba(0,123,255,0.2);
+            color: var(--text-dark);
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-description {
+            color: var(--text-light);
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .dark-theme .footer-description {
+            color: var(--text-dark);
+        }
+
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .doc-container {
+                grid-template-columns: 250px 1fr; /* Slightly smaller sidebar */
+            }
+            .nav-links {
+                gap: 15px;
+            }
+            .nav-links a {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            .logo {
+                font-size: 1.6rem;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1.1rem;
+            }
+            .section h2 {
+                font-size: 1.8rem;
+            }
+            .section h3 {
+                font-size: 1.5rem;
+            }
+            .feature-grid, .score-range {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .doc-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+                order: 2; /* Puts sidebar below content on mobile */
+                margin-top: 30px;
+            }
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            .section h2 {
+                font-size: 1.6rem;
+            }
+            .section h3 {
+                font-size: 1.3rem;
+            }
+            .feature-grid, .score-range {
+                grid-template-columns: 1fr;
+            }
+            .table {
+                font-size: 0.9rem;
+            }
+            .table th, .table td {
+                padding: 10px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .footer-container {
+                padding: 0 20px;
+            }
+            .footer {
+                padding: 40px 0 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #app {
+                padding: 20px;
+                margin: 15px auto;
+            }
+            .content {
+                padding: 25px;
+            }
+            .sidebar {
+                padding: 20px;
+            }
+            .floating-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 12px 16px;
+                font-size: 1.2rem;
+            }
+            .alert {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .alert::before {
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="starfield"></canvas>
+    <button class="floating-toggle" id="themeToggle" aria-label="Toggle dark/light theme">
+        <span class="material-icons">dark_mode</span>
+    </button>
+
+    <div id="app">
+        <nav class="navbar" role="navigation" aria-label="Primary navigation">
+            <a href="/" class="logo" aria-label="Go to homepage">
+                <span class="material-icons" aria-hidden="true">analytics</span>
+                Webyverse
+            </a>
+            <div class="nav-links">
+                <a href="/" aria-label="Main domain analyzer">
+                    <span class="material-icons" aria-hidden="true">domain</span> Domain 
+                </a>
+                <a href="/email-verify" aria-label="Email verification tool">
+                    <span class="material-icons" aria-hidden="true">verified_user</span> Email 
+                </a>
+                <a href="/phone-lookup" aria-label="Phone lookup tool">
+                    <span class="material-icons" aria-hidden="true">phone</span> Phone 
+                </a>
+            </div>
+        </nav>
+
+        <header class="hero" role="banner">
+            <h1>📚 Comprehensive Documentation</h1>
+            <p>Your complete guide to understanding Webyverse analysis results, scoring systems, and technical insights for domains, emails, and phone numbers.</p>
+        </header>
+
+        <div class="doc-container">
+            <aside class="sidebar" role="complementary" aria-label="Documentation Navigation">
+                <input type="text" id="sidebarSearch" class="sidebar-search" placeholder="Search documentation..." aria-label="Search documentation">
+                <h3><span class="material-icons">explore</span> Quick Navigation</h3>
+                <ul>
+                    <li><a href="#overview"><span class="material-icons">info</span> Overview</a></li>
+                    <li><a href="#scoring-system"><span class="material-icons">score</span> Scoring System</a>
+                        <ul class="sub-nav">
+                            <li><a href="#score-ranges">Score Ranges</a></li>
+                            <li><a href="#calculation">How Scores Are Calculated</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#domain-analysis"><span class="material-icons">domain</span> Domain Analysis</a>
+                        <ul class="sub-nav">
+                            <li><a href="#seo-analysis">SEO Analysis</a></li>
+                            <li><a href="#security-analysis">Security Analysis</a></li>
+                            <li><a href="#performance-analysis">Performance Analysis</a></li>
+                            <li><a href="#hosting-info">Hosting Information</a></li>
+                            <li><a href="#technical-details">Technical Details</a></li>
+                            <li><a href="#dns-records">DNS Records</a></li>
+                            <li><a href="#whois-data">WHOIS Data</a></li>
+                            <li><a href="#social-presence">Social Presence</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#email-verification"><span class="material-icons">verified_user</span> Email Verification</a>
+                        <ul class="sub-nav">
+                            <li><a href="#email-validation-checks">Validation Checks</a></li>
+                            <li><a href="#email-reputation">Email Reputation</a></li>
+                            <li><a href="#email-troubleshooting">Common Issues</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#phone-lookup"><span class="material-icons">phone</span> Phone Lookup</a>
+                        <ul class="sub-nav">
+                            <li><a href="#phone-data-points">Data Points</a></li>
+                            <li><a href="#phone-carrier-info">Carrier Information</a></li>
+                            <li><a href="#phone-risk-assessment">Risk Assessment</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#troubleshooting"><span class="material-icons">build</span> General Troubleshooting</a></li>
+                    <li><a href="#api-reference"><span class="material-icons">api</span> API Reference</a></li>
+                </ul>
+            </aside>
+
+            <main class="content" role="main">
+                <section id="overview" class="section">
+                    <h2><span class="material-icons">info</span> Overview</h2>
+                    <p>Webyverse provides comprehensive analysis tools for domains, email addresses, and phone numbers. Our platform evaluates various aspects to deliver actionable insights, helping you improve your online presence, security, and communication strategies.</p>
+
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">domain</span>
+                                Domain Analyzer
+                            </div>
+                            <p>Evaluates websites across SEO, security, performance, hosting, and technical aspects to provide a holistic health score.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">verified_user</span>
+                                Email Verification
+                            </div>
+                            <p>Validates email addresses with checks for format, domain, MX records, SMTP, and deliverability to ensure accuracy.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">phone</span>
+                                Phone Lookup
+                            </div>
+                            <p>Provides detailed information about phone numbers, including carrier, location, line type, and potential risk factors.</p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Getting Started:</strong> Simply navigate to the respective tool (Domain, Email, or Phone) and enter the details you wish to analyze. Our system will automatically process and present detailed results.
+                    </div>
+                </section>
+
+                <section id="scoring-system" class="section">
+                    <h2><span class="material-icons">score</span> Scoring System</h2>
+                    <p>Our scoring system provides clear, actionable insights into your website's performance across various dimensions. Each score ranges from 0-100, with specific thresholds indicating different performance levels.</p>
+
+                    <h3 id="score-ranges"><span class="material-icons">bar_chart</span> Score Ranges Explained</h3>
+                    <div class="score-range">
+                        <div class="score-card score-excellent">
+                            <div class="score-title">
+                                <span class="score-number">90-100</span>
+                                Excellent
+                            </div>
+                            <div class="score-description">
+                                Outstanding performance with industry best practices fully implemented. Your asset excels in this area.
+                            </div>
+                        </div>
+                        <div class="score-card score-good">
+                            <div class="score-title">
+                                <span class="score-number">70-89</span>
+                                Good
+                            </div>
+                            <div class="score-description">
+                                Solid performance with most best practices in place. Minor optimizations could push you to excellent.
+                            </div>
+                        </div>
+                        <div class="score-card score-average">
+                            <div class="score-title">
+                                <span class="score-number">50-69</span>
+                                Average
+                            </div>
+                            <div class="score-description">
+                                Acceptable performance but significant improvements are needed to compete effectively.
+                            </div>
+                        </div>
+                        <div class="score-card score-poor">
+                            <div class="score-title">
+                                <span class="score-number">0-49</span>
+                                Poor
+                            </div>
+                            <div class="score-description">
+                                Critical issues present that need immediate attention. This may impact user experience and rankings.
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 id="calculation"><span class="material-icons">calculate</span> How Scores Are Calculated</h3>
+                    <div class="metric-card">
+                        <div class="metric-title">Overall Score Formula (Domain Analyzer)</div>
+                        <div class="code-block">
+Overall Score = (SEO Score + Security Score + Performance Score) ÷ 3
+                        </div>
+                        <p>The overall score for domains is the average of its three individual scores, providing a balanced view of your website's health. Email and Phone scores are calculated based on a weighted sum of their respective validation checks and risk factors.</p>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>Important:</strong> Scores are calculated in real-time based on current data. Regular monitoring is recommended as changes can affect scores.
+                    </div>
+                </section>
+
+                <section id="domain-analysis" class="section">
+                    <h2><span class="material-icons">domain</span> Domain Analysis</h2>
+                    <p>The Domain Analyzer provides a deep dive into your website's technical health, covering critical aspects that influence its visibility, security, and user experience.</p>
+
+                    <h3 id="seo-analysis"><span class="material-icons">search</span> SEO Analysis</h3>
+                    <p>Evaluates how well your website is optimized for search engines. A higher SEO score correlates with better search engine rankings and visibility.</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Factor</th>
+                                <th>Points</th>
+                                <th>Description</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Meta Tags</strong></td>
+                                <td class="score-cell good-score">+40</td>
+                                <td>Title, description, keywords, and other meta information.</td>
+                                <td><span class="status-indicator status-good">High</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Open Graph Tags</strong></td>
+                                <td class="score-cell good-score">+30</td>
+                                <td>Social media sharing optimization (Facebook, Twitter, etc.).</td>
+                                <td><span class="status-indicator status-good">High</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>XML Sitemap</strong></td>
+                                <td class="score-cell average-score">+20</td>
+                                <td>Presence of XML sitemap for search engine crawling.</td>
+                                <td><span class="status-indicator status-good">High</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="expandable-section">
+                        <div class="expandable-header" onclick="toggleSection('meta-details')">
+                            <span><span class="material-icons">description</span> Meta Tags Deep Dive</span>
+                            <span class="material-icons expand-icon" id="meta-details-icon">expand_more</span>
+                        </div>
+                        <div class="expandable-content" id="meta-details">
+                            <h4><span class="material-icons">title</span> Title Tag</h4>
+                            <p>The most important meta tag for SEO. Should be 50-60 characters and include primary keywords.</p>
+                            <div class="code-block">&lt;title&gt;Your Page Title - Brand Name&lt;/title&gt;</div>
+                            <h4><span class="material-icons">short_text</span> Meta Description</h4>
+                            <p>Appears in search results. Should be 150-160 characters and compelling to encourage clicks.</p>
+                            <div class="code-block">&lt;meta name="description" content="A compelling description of your page content that encourages users to click."&gt;</div>
+                        </div>
+                    </div>
+
+                    <h3 id="security-analysis"><span class="material-icons">security</span> Security Analysis</h3>
+                    <p>Evaluates your website's implementation of security best practices. A high security score indicates that your site protects user data and follows modern security standards.</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Security Factor</th>
+                                <th>Points</th>
+                                <th>Description</th>
+                                <th>Risk Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SSL Certificate</strong></td>
+                                <td class="score-cell good-score">+50</td>
+                                <td>Valid HTTPS encryption with trusted certificate.</td>
+                                <td><span class="status-indicator status-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Security Headers</strong></td>
+                                <td class="score-cell good-score">+10 each</td>
+                                <td>HTTP security headers (max 50 points total).</td>
+                                <td><span class="status-indicator status-warning">High</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="expandable-section">
+                        <div class="expandable-header" onclick="toggleSection('ssl-details')">
+                            <span><span class="material-icons">lock</span> SSL Certificates Explained</span>
+                            <span class="material-icons expand-icon" id="ssl-details-icon">expand_more</span>
+                        </div>
+                        <div class="expandable-content" id="ssl-details">
+                            <h4><span class="material-icons">verified</span> Data Encryption</h4>
+                            <p>Protects sensitive information like passwords, credit card numbers, and personal data from interception.</p>
+                            <h4><span class="material-icons">gpp_good</span> Trust Indicators</h4>
+                            <p>Browsers show a padlock icon and "Secure" label, building user confidence in your website.</p>
+                        </div>
+                    </div>
+
+                    <h3 id="performance-analysis"><span class="material-icons">speed</span> Performance Analysis</h3>
+                    <p>Evaluates technical factors that affect your website's speed, reliability, and user experience. We analyze underlying infrastructure and optimization techniques.</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Performance Factor</th>
+                                <th>Points</th>
+                                <th>Description</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Successful Connection</strong></td>
+                                <td class="score-cell good-score">+20</td>
+                                <td>Website loads successfully without errors.</td>
+                                <td><span class="status-indicator status-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Compression (Gzip/Brotli)</strong></td>
+                                <td class="score-cell good-score">+15</td>
+                                <td>Content is compressed to reduce transfer size.</td>
+                                <td><span class="status-indicator status-good">High</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>CDN Detection</strong></td>
+                                <td class="score-cell good-score">+15</td>
+                                <td>Content Delivery Network usage.</td>
+                                <td><span class="status-indicator status-good">High</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 id="hosting-info"><span class="material-icons">cloud</span> Hosting Information</h3>
+                    <p>Understanding your hosting setup is crucial for performance optimization and security planning. We analyze multiple aspects of your hosting infrastructure.</p>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">apartment</span>
+                                Dedicated Hosting
+                            </div>
+                            <p>Your website has its own server resources, ensuring consistent performance and no resource sharing.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">groups</span>
+                                Shared Hosting
+                            </div>
+                            <p>Resources are shared with other websites, which can affect performance during high traffic periods.</p>
+                        </div>
+                    </div>
+
+                    <h3 id="technical-details"><span class="material-icons">settings</span> Technical Details</h3>
+                    <p>We analyze the technical stack powering your website to understand its capabilities, performance characteristics, and potential optimization opportunities.</p>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">web</span>
+                                CMS Detection
+                            </div>
+                            <p>Identifies the Content Management System (e.g., WordPress, Shopify) powering your website.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">layers</span>
+                                Technology Stack
+                            </div>
+                            <p>Detects frontend frameworks, JavaScript libraries, analytics tools, and server technologies.</p>
+                        </div>
+                    </div>
+
+                    <h3 id="dns-records"><span class="material-icons">dns</span> DNS Records</h3>
+                    <p>DNS (Domain Name System) records are instructions that tell the internet how to find your website. We analyze key record types to understand your domain configuration.</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Record Type</th>
+                                <th>Purpose</th>
+                                <th>Importance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>A Records</strong></td>
+                                <td>Point your domain to an IPv4 address.</td>
+                                <td><span class="status-indicator status-danger">Critical for Access</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>MX Records</strong></td>
+                                <td>Direct email to your mail servers.</td>
+                                <td><span class="status-indicator status-warning">Email Functionality</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 id="whois-data"><span class="material-icons">assignment</span> WHOIS Data</h3>
+                    <p>WHOIS data provides registration information about your domain, including ownership details, registration dates, and nameserver information.</p>
+                    <div class="quick-tip">
+                        <div class="quick-tip-title">Domain Management Best Practices</div>
+                        <ul>
+                            <li><strong>Enable Auto-Renewal:</strong> Prevent accidental expiration.</li>
+                            <li><strong>Use Domain Privacy:</strong> Protect personal information.</li>
+                            <li><strong>Keep Contact Info Updated:</strong> Ensure you receive important notices.</li>
+                        </ul>
+                    </div>
+
+                    <h3 id="social-presence"><span class="material-icons">share</span> Social Presence</h3>
+                    <p>We scan your website for social media links to understand your online presence and social media integration. Social signals can indirectly impact SEO and user engagement.</p>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">facebook</span>
+                                Facebook
+                            </div>
+                            <p>Detection of Facebook links for brand awareness and referral traffic.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">alternate_email</span>
+                                Twitter/X
+                            </div>
+                            <p>Detection of Twitter/X links for real-time engagement and content distribution.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="email-verification" class="section">
+                    <h2><span class="material-icons">verified_user</span> Email Verification</h2>
+                    <p>Our email verification tool performs comprehensive checks to ensure the validity and deliverability of an email address, helping you maintain clean mailing lists and improve communication.</p>
+
+                    <h3 id="email-validation-checks"><span class="material-icons">check_circle_outline</span> Validation Checks</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Check</th>
+                                <th>Description</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Format Validation</strong></td>
+                                <td>Ensures the email adheres to RFC standards (e.g., user@domain.com).</td>
+                                <td><span class="status-indicator status-danger">Critical</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Domain Verification</strong></td>
+                                <td>Checks if the domain exists and has valid MX records.</td>
+                                <td><span class="status-indicator status-good">High</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SMTP Testing</strong></td>
+                                <td>Connects to the mail server to confirm it accepts mail for the address.</td>
+                                <td><span class="status-indicator status-good">High</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Deliverability Analysis</strong></td>
+                                <td>Determines if the email is likely to reach the inbox.</td>
+                                <td><span class="status-indicator status-good">High</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 id="email-reputation"><span class="material-icons">star_half</span> Email Reputation</h3>
+                    <p>Each email verification provides a reputation score, indicating the overall trustworthiness and deliverability likelihood of the email address.</p>
+                    <div class="score-range">
+                        <div class="score-card score-excellent">
+                            <div class="score-title">
+                                <span class="score-number">90-100</span>
+                                Very Low Risk
+                            </div>
+                            <div class="score-description">Highly deliverable, excellent reputation.</div>
+                        </div>
+                        <div class="score-card score-poor">
+                            <div class="score-title">
+                                <span class="score-number">0-49</span>
+                                Very High Risk
+                            </div>
+                            <div class="score-description">Likely undeliverable or spam trap.</div>
+                        </div>
+                    </div>
+
+                    <h3 id="email-troubleshooting"><span class="material-icons">bug_report</span> Common Email Issues</h3>
+                    <div class="alert alert-danger">
+                        <strong>Invalid Format:</strong> The email address does not follow standard email syntax.
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>No MX Records:</strong> The domain exists but has no mail exchange records, meaning it cannot receive emails.
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>SMTP Connection Failed:</strong> Unable to connect to the mail server, possibly due to temporary issues or a non-existent server.
+                    </div>
+                </section>
+
+                <section id="phone-lookup" class="section">
+                    <h2><span class="material-icons">phone</span> Phone Lookup</h2>
+                    <p>Our phone lookup tool provides detailed information about phone numbers, helping you identify the caller, assess risk, and understand the number's characteristics.</p>
+
+                    <h3 id="phone-data-points"><span class="material-icons">data_usage</span> Key Data Points</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Data Point</th>
+                                <th>Description</th>
+                                <th>Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Line Type</strong></td>
+                                <td>Identifies if it's a mobile, landline, VoIP, or toll-free number.</td>
+                                <td>Filtering for marketing campaigns, fraud detection.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Carrier Information</strong></td>
+                                <td>Details about the telecommunications provider.</td>
+                                <td>Understanding network reach, potential service issues.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Geographic Location</strong></td>
+                                <td>Associated city, state, and country (for landlines/some mobiles).</td>
+                                <td>Localizing services, verifying user location.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 id="phone-carrier-info"><span class="material-icons">network_check</span> Carrier Information</h3>
+                    <p>Knowing the carrier can be vital for understanding call routing, potential service quality, and identifying specific network-related issues.</p>
+                    <div class="quick-tip">
+                        <div class="quick-tip-title">Why Carrier Info Matters</div>
+                        <p>Different carriers may have varying service quality or be associated with specific types of numbers (e.g., some VoIP providers are more common for spam calls).</p>
+                    </div>
+
+                    <h3 id="phone-risk-assessment"><span class="material-icons">gavel</span> Risk Assessment</h3>
+                    <p>We provide a risk assessment for phone numbers based on various factors, including known spam reports, line type, and historical data.</p>
+                    <div class="alert alert-danger">
+                        <strong>High Risk:</strong> Number associated with known spam, fraud, or suspicious activity.
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>Medium Risk:</strong> Number has some flags, but not definitively malicious (e.g., new VoIP number).
+                    </div>
+                    <div class="alert alert-success">
+                        <strong>Low Risk:</strong> Number appears legitimate and has no negative flags.
+                    </div>
+                </section>
+
+                <section id="troubleshooting" class="section">
+                    <h2><span class="material-icons">build</span> General Troubleshooting</h2>
+                    <p>Common issues you might encounter when using Webyverse tools and how to resolve them.</p>
+
+                    <div class="expandable-section">
+                        <div class="expandable-header" onclick="toggleSection('analysis-issues')">
+                            <span><span class="material-icons">error_outline</span> Analysis Problems</span>
+                            <span class="material-icons expand-icon" id="analysis-issues-icon">expand_more</span>
+                        </div>
+                        <div class="expandable-content" id="analysis-issues">
+                            <h4><span class="material-icons">cloud_off</span> "Unable to fetch" or "Not Found" Error</h4>
+                            <p><strong>Possible Causes:</strong></p>
+                            <ul>
+                                <li>Input (domain, email, phone) is misspelled or doesn't exist.</li>
+                                <li>The target website/service is down or unreachable.</li>
+                                <li>Firewall or security measures blocking our analysis servers.</li>
+                            </ul>
+                            <p><strong>Solutions:</strong></p>
+                            <ol>
+                                <li>Double-check the input for typos.</li>
+                                <li>Verify the target is accessible in your browser or via other means.</li>
+                                <li>Wait a few minutes and try again.</li>
+                            </ol>
+
+                            <h4><span class="material-icons">incomplete_circle</span> Incomplete Results</h4>
+                            <p><strong>Common Reasons:</strong></p>
+                            <ul>
+                                <li>Target blocks automated requests or has very slow response times.</li>
+                                <li>Missing or malformed data on the target (e.g., missing meta tags).</li>
+                            </ul>
+                            <p><strong>Solutions:</strong></p>
+                            <ol>
+                                <li>Ensure the target loads quickly and completely in a browser.</li>
+                                <li>Check for proper implementation of required data (e.g., meta tags for SEO).</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="expandable-section">
+                        <div class="expandable-header" onclick="toggleSection('score-issues')">
+                            <span><span class="material-icons">trending_down</span> Lower Than Expected Scores</span>
+                            <span class="material-icons expand-icon" id="score-issues-icon">expand_more</span>
+                        </div>
+                        <div class="expandable-content" id="score-issues">
+                            <h4><span class="material-icons">search_off</span> SEO Score</h4>
+                            <ul>
+                                <li>Missing or incomplete meta tags (title, description).</li>
+                                <li>No Open Graph or Twitter Card implementation.</li>
+                                <li>Missing XML sitemap.</li>
+                            </ul>
+                            <h4><span class="material-icons">lock_open</span> Security Score</h4>
+                            <ul>
+                                <li>No SSL certificate or an expired one.</li>
+                                <li>Missing crucial security headers (HSTS, CSP, X-Frame-Options).</li>
+                            </ul>
+                            <h4><span class="material-icons">timer_off</span> Performance Score</h4>
+                            <ul>
+                                <li>No compression (Gzip/Brotli) enabled.</li>
+                                <li>Missing or incorrect caching headers.</li>
+                                <li>Slow or unreliable hosting provider.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-title"><span class="material-icons">support_agent</span> Getting Help</div>
+                        <p>If you continue experiencing issues:</p>
+                        <ul>
+                            <li><strong>Check our FAQ:</strong> For common questions and solutions.</li>
+                            <li><strong>Contact Support:</strong> Use the contact form with specific details (input, error messages, browser).</li>
+                            <li><strong>Provide Screenshots:</strong> Visual evidence helps us diagnose issues faster.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="api-reference" class="section">
+                    <h2><span class="material-icons">api</span> API Reference</h2>
+                    <p>For developers who want to integrate Webyverse analysis into their own applications, we provide API endpoints for programmatic access to our domain, email, and phone analysis data.</p>
+
+                    <h3><span class="material-icons">endpoint</span> Available Endpoints</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">domain</span>
+                                GET /api/domain/{name}
+                            </div>
+                            <p>Retrieve detailed analysis for a specific domain.</p>
+                            <div class="code-block">GET /api/domain/example.com</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">verified_user</span>
+                                GET /api/email/{address}
+                            </div>
+                            <p>Get comprehensive verification results for an email address.</p>
+                            <div class="code-block">GET /api/email/user@example.com</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-title">
+                                <span class="material-icons">phone</span>
+                                GET /api/phone/{number}
+                            </div>
+                            <p>Lookup details and risk assessment for a phone number.</p>
+                            <div class="code-block">GET /api/phone/+15551234567</div>
+                        </div>
+                    </div>
+
+                    <div class="expandable-section">
+                        <div class="expandable-header" onclick="toggleSection('api-examples')">
+                            <span><span class="material-icons">code</span> API Usage Examples</span>
+                            <span class="material-icons expand-icon" id="api-examples-icon">expand_more</span>
+                        </div>
+                        <div class="expandable-content" id="api-examples">
+                            <h4>JavaScript/Fetch Example (Domain)</h4>
+                            <div class="code-block">
+fetch('/api/domain/example.com')
+  .then(response => response.json())
+  .then(data => {
+    console.log('SEO Score:', data.seo_score);
+    console.log('Security Score:', data.security_score);
+  })
+  .catch(error => console.error('Error:', error));
+                            </div>
+
+                            <h4>Python Example (Email)</h4>
+                            <div class="code-block">
+import requests
+
+response = requests.get('http://your-domain.com/api/email/user@example.com')
+if response.status_code == 200:
+    data = response.json()
+    print(f"Deliverability: {data['deliverability_status']}")
+    print(f"Reputation Score: {data['reputation_score']}")
+else:
+    print("Email not found or error occurred")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Rate Limiting:</strong> API endpoints are rate-limited to prevent abuse. Contact us for higher rate limits if needed for legitimate use cases.
+                    </div>
+                </section>
+
+                <div class="alert alert-success">
+                    <strong>🎉 Congratulations!</strong> You've explored the Webyverse documentation. Use this knowledge to optimize your digital assets and improve their performance, security, and effectiveness.
+                </div>
+
+                <div class="quick-tip">
+                    <div class="quick-tip-title">Next Steps</div>
+                    <ol>
+                        <li><strong>Analyze Your Assets:</strong> Run a comprehensive analysis using our tools.</li>
+                        <li><strong>Identify Issues:</strong> Focus on areas with lower scores or critical warnings.</li>
+                        <li><strong>Implement Improvements:</strong> Use our recommendations to enhance your digital presence.</li>
+                        <li><strong>Monitor Progress:</strong> Regular analysis helps track improvements over time.</li>
+                    </ol>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer (from email_verify.html) -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Brand Section -->
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="material-icons">analytics</span>
+                        Webyverse
+                    </div>
+                    <p class="footer-description">
+                        Comprehensive web analysis tools for domains, emails, and phone numbers.
+                        Get detailed insights and security analysis for better online presence.
+                    </p>
+                </div>
+
+                <!-- Tools Section -->
+                <div class="footer-section">
+                    <h3>
+                        <span class="material-icons">build</span>
+                        Analysis Tools
+                    </h3>
+                    <ul class="footer-links">
+                        <li><a href="/"><span class="material-icons">domain</span>Domain Analyzer</a></li>
+                        <li><a href="/email-verify"><span class="material-icons">verified_user</span>Email Verification</a></li>
+                        <li><a href="/phone-lookup"><span class="material-icons">phone</span>Phone Lookup</a></li>
+                    </ul>
+                </div>
+
+                <!-- History & Reports -->
+                <div class="footer-section">
+                    <h3>
+                        <span class="material-icons">history</span>
+                        History & Reports
+                    </h3>
+                    <ul class="footer-links">
+                        <li><a href="/history"><span class="material-icons">timeline</span>Domain History</a></li>
+                        <li><a href="/emailhistory"><span class="material-icons">email</span>Email History</a></li>
+                        <li><a href="/phonehistory"><span class="material-icons">phone_callback</span>Phone History</a></li>
+                    </ul>
+                </div>
+
+                <!-- Documentation -->
+                <div class="footer-section">
+                    <h3>
+                        <span class="material-icons">menu_book</span>
+                        Documentation
+                    </h3>
+                    <ul class="footer-links">
+                        <li><a href="/documentation"><span class="material-icons">description</span>Domain Docs</a></li>
+                        <li><a href="/emaildocs"><span class="material-icons">mail_outline</span>Email Docs</a></li>
+                        <li><a href="/phonedocs"><span class="material-icons">phone_in_talk</span>Phone Docs</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company Info -->
+                <div class="footer-section">
+                    <h3>
+                        <span class="material-icons">business</span>
+                        Company
+                    </h3>
+                    <ul class="footer-links">
+                        <li><a href="/about"><span class="material-icons">info</span>About Us</a></li>
+                        <li><a href="/contact"><span class="material-icons">contact_mail</span>Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Webyverse. All rights reserved. | Advanced Web Analysis Platform</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality (from email_verify.html)
+        const body = document.body;
+        const themeToggle = document.getElementById('themeToggle');
+
+        function updateThemeToggleIcon() {
+            const isDark = body.classList.contains('dark-theme');
+            const icon = themeToggle.querySelector('.material-icons');
+            icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            updateThemeToggleIcon();
+
+            // Add smooth transition effect
+            themeToggle.style.transform = 'scale(0.8) rotate(10deg)';
+            setTimeout(() => {
+                themeToggle.style.transform = 'scale(1) rotate(0deg)';
+            }, 200);
+        });
+
+        // Initialize theme from localStorage
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-theme');
+        }
+        updateThemeToggleIcon();
+
+        // Expandable sections functionality
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId);
+            const icon = document.getElementById(sectionId + '-icon');
+
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.classList.remove('rotated');
+                content.style.display = 'none';
+            } else {
+                content.classList.add('active');
+                icon.classList.add('rotated');
+                content.style.display = 'block';
+            }
+        }
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.sidebar a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const target = document.querySelector(targetId);
+                if (target) {
+                    // Close any open expandable sections in the target section
+                    const expandableContents = target.querySelectorAll('.expandable-content.active');
+                    expandableContents.forEach(el => {
+                        el.classList.remove('active');
+                        el.style.display = 'none';
+                        const icon = document.getElementById(el.id + '-icon');
+                        if (icon) icon.classList.remove('rotated');
+                    });
+
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+                    // Update URL hash without page reload
+                    history.pushState(null, null, targetId);
+                }
+            });
+        });
+
+        // Highlight current section in navigation
+        function updateActiveNavigation() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.sidebar a');
+            const currentHash = window.location.hash;
+
+            let currentSectionId = '';
+            let foundSection = false;
+
+            // Check for hash first
+            if (currentHash) {
+                const targetSection = document.querySelector(currentHash);
+                if (targetSection) {
+                    const rect = targetSection.getBoundingClientRect();
+                    if (rect.top <= 100 && rect.bottom >= 0) { // Check if it's in view or just above
+                        currentSectionId = targetSection.id;
+                        foundSection = true;
+                    }
+                }
+            }
+
+            // If no hash or hash section not in view, determine based on scroll position
+            if (!foundSection) {
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    // A section is considered active if its top is within 100px from viewport top
+                    // and its bottom is still visible.
+                    if (rect.top <= 100 && rect.bottom >= 0) {
+                        currentSectionId = section.id;
+                    }
+                });
+            }
+
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                const linkHref = link.getAttribute('href');
+                if (linkHref === '#' + currentSectionId) {
+                    link.classList.add('active');
+                } else if (linkHref.startsWith('#') && linkHref.includes('-')) { // For sub-nav links
+                    const parentSectionId = linkHref.split('-')[0];
+                    if (parentSectionId === '#' + currentSectionId.split('-')[0]) {
+                        // Optionally highlight parent section if a sub-section is active
+                        // This logic might need refinement based on desired sub-nav behavior
+                    }
+                }
+            });
+        }
+
+        // Update navigation on scroll and on load
+        window.addEventListener('scroll', updateActiveNavigation);
+        window.addEventListener('load', updateActiveNavigation);
+        window.addEventListener('hashchange', updateActiveNavigation); // Update on hash change
+
+        // Copy code block functionality
+        document.querySelectorAll('.code-block').forEach(block => {
+            block.addEventListener('click', () => {
+                const textToCopy = block.textContent.trim(); // Trim whitespace
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Visual feedback: briefly change background
+                    const originalBg = block.style.backgroundColor;
+                    const originalBorder = block.style.borderColor;
+                    block.style.backgroundColor = 'var(--success)';
+                    block.style.borderColor = 'var(--success)';
+                    block.style.color = 'white'; // Ensure text is visible
+                    setTimeout(() => {
+                        block.style.backgroundColor = originalBg;
+                        block.style.borderColor = originalBorder;
+                        block.style.color = ''; // Reset text color
+                    }, 500);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    // Fallback for older browsers or permissions issues
+                    alert('Failed to copy code. Please copy manually.');
+                });
+            });
+        });
+
+        // Sidebar search functionality
+        const sidebarSearchInput = document.getElementById('sidebarSearch');
+        sidebarSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const sections = document.querySelectorAll('.section');
+            const sidebarLinks = document.querySelectorAll('.sidebar li');
+
+            sections.forEach(section => {
+                const sectionText = section.textContent.toLowerCase();
+                const shouldShowSection = sectionText.includes(searchTerm) || searchTerm === '';
+                section.style.display = shouldShowSection ? 'block' : 'none';
+            });
+
+            sidebarLinks.forEach(li => {
+                const linkText = li.textContent.toLowerCase();
+                const shouldShowLink = linkText.includes(searchTerm) || searchTerm === '';
+                li.style.display = shouldShowLink ? 'list-item' : 'none';
+
+                // If a parent link is hidden, hide its sub-nav too
+                if (!shouldShowLink && li.querySelector('.sub-nav')) {
+                    li.querySelector('.sub-nav').style.display = 'none';
+                } else if (shouldShowLink && li.querySelector('.sub-nav')) {
+                    // If parent is shown, ensure sub-nav visibility is based on its own search match
+                    const subNavLinks = li.querySelectorAll('.sub-nav li');
+                    let subNavHasVisibleLink = false;
+                    subNavLinks.forEach(subLi => {
+                        const subLinkText = subLi.textContent.toLowerCase();
+                        const shouldShowSubLink = subLinkText.includes(searchTerm) || searchTerm === '';
+                        subLi.style.display = shouldShowSubLink ? 'list-item' : 'none';
+                        if (shouldShowSubLink) subNavHasVisibleLink = true;
+                    });
+                    li.querySelector('.sub-nav').style.display = subNavHasVisibleLink || searchTerm === '' ? 'block' : 'none';
+                }
+            });
+        });
+
+        // Initial animation for app container
+        document.addEventListener('DOMContentLoaded', function() {
+            const app = document.getElementById('app');
+            app.style.opacity = '0';
+            app.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                app.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                app.style.opacity = '1';
+                app.style.transform = 'translateY(0)';
+            }, 100);
+        });
+
+        // Starfield animation (from email_verify.html)
+        (function() {
+            const canvas = document.getElementById("starfield");
+            if (!canvas) return;
+
+            const ctx = canvas.getContext("2d");
+            let stars = [], w, h, animationId;
+            let lastTime = 0;
+            const targetFPS = 60;
+            const frameTime = 1000 / targetFPS;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+                stars = [];
+
+                // Create enhanced stars
+                for (let i = 0; i < 250; i++) {
+                    stars.push({
+                        x: Math.random() * w,
+                        y: Math.random() * h,
+                        r: Math.random() * 1.5 + 0.3,
+                        dx: 0.02 + Math.random() * 0.05,
+                        dy: (Math.random() - 0.5) * 0.03,
+                        opacity: Math.random() * 0.6 + 0.2,
+                        twinkle: Math.random() * 0.02 + 0.01,
+                        twinklePhase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+
+            function draw(currentTime) {
+                if (currentTime - lastTime < frameTime) {
+                    animationId = requestAnimationFrame(draw);
+                    return;
+                }
+
+                if (!ctx || !document.body.classList.contains('dark-theme')) {
+                    animationId = requestAnimationFrame(draw);
+                    return;
+                }
+
+                lastTime = currentTime;
+                ctx.clearRect(0, 0, w, h);
+
+                stars.forEach(s => {
+                    s.twinklePhase += s.twinkle;
+                    const twinkleOpacity = s.opacity + Math.sin(s.twinklePhase) * 0.3;
+
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${Math.max(0, Math.min(1, twinkleOpacity))})`;
+                    ctx.fill();
+
+                    s.x += s.dx;
+                    s.y += s.dy;
+
+                    if (s.x > w + s.r) s.x = -s.r;
+                    if (s.x < -s.r) s.x = w + s.r;
+                    if (s.y > h + s.r) s.y = -s.r;
+                    if (s.y < -s.r) s.y = h + s.r;
+                });
+
+                animationId = requestAnimationFrame(draw);
+            }
+
+            function startAnimation() {
+                if (animationId) cancelAnimationFrame(animationId);
+                animationId = requestAnimationFrame(draw);
+            }
+
+            function stopAnimation() {
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+                if (ctx) ctx.clearRect(0, 0, w, h);
+            }
+
+            // Event listeners
+            let resizeTimeout;
+            window.addEventListener("resize", () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(resize, 250);
+            });
+
+            // Theme change detection
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        if (document.body.classList.contains('dark-theme')) {
+                            startAnimation();
+                        } else {
+                            stopAnimation();
+                        }
+                    }
+                });
+            });
+
+            observer.observe(document.body, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    stopAnimation();
+                } else if (document.body.classList.contains('dark-theme')) {
+                    startAnimation();
+                }
+            });
+
+            // Initialize
+            resize();
+            if (document.body.classList.contains('dark-theme')) {
+                startAnimation();
+            }
+        })();
+    </script>
+</body>
+</html>

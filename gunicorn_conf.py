@@ -1,0 +1,12 @@
+bind = '0.0.0.0:8080'
+user = 'root'
+workers = 1
+threads = 2
+backlog = 512
+chdir = '/www/wwwroot/webyverse.net'
+access_log_format = '%(t)s %(p)s %(h)s "%(r)s" %(s)s %(L)s %(b)s %(f)s" "%(a)s"'
+loglevel = 'info'
+worker_class = 'sync'
+errorlog = chdir + '/logs/error.log'
+accesslog = chdir + '/logs/access.log'
+pidfile = chdir + '/logs/webyverse.pid'

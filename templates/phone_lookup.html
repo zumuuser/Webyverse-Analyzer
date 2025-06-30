@@ -1,0 +1,2672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Webyverse - Advanced Phone Lookup & Reverse Search</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  
+  <style>
+    /* Root colors and fonts - Enhanced theme system */
+    :root {
+      --container-light: #ffffff;
+      --container-dark: #1e1e1e;
+      --text-light: #212529;
+      --text-dark: #e4e6eb;
+      --accent: #007bff;
+      --accent-secondary: #6f42c1;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --info: #17a2b8;
+      --card-light: #f8f9fa;
+      --card-dark: #252525;
+      --bg-dark: #1a1a1a;
+      --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-success: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      --gradient-danger: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+      --gradient-info: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+    }
+
+    /* Enhanced animated background - matching index.html exactly */
+    body {
+      background: linear-gradient(-45deg,
+        #ffffff,
+        #dfe9f3,
+        #c0d3f2,
+        #ffffff
+      );
+      background-size: 300% 300%;
+      animation: bgMove 10s ease-in-out infinite;
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    
+    .dark-theme {
+      background: linear-gradient(-45deg,
+        #1a1a1a, #202533, #2b2f3a, #1f1f1f);
+      background-size: 300% 300%;
+      animation: bgMove 10s ease-in-out infinite;
+      color: var(--text-dark);
+    }
+    
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Enhanced starfield effect for dark theme */
+    .dark-theme::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-image: radial-gradient(white 0.6px, transparent 0.6px);
+      background-size: 150px 150px;
+      background-position: 0 0;
+      opacity: 0.08;
+      animation: twinkle 3s infinite ease-in-out alternate;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.03; transform: translateY(0); }
+      50% { opacity: 0.12; transform: translateY(-1px); }
+      100% { opacity: 0.06; transform: translateY(0); }
+    }
+
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      display: none;
+    }
+    .dark-theme #starfield {
+      display: block;
+    }
+
+    /* Main container with enhanced styling - REDUCED SIZE */
+    #app {
+      max-width: 850px;
+      margin: 30px auto;
+      background: var(--container-light);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+      transition: all 0.4s ease;
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .dark-theme #app {
+      background: var(--container-dark);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Enhanced navigation - REDUCED SIZE */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      border-bottom: 2px solid rgba(0,123,255,0.1);
+      padding-bottom: 20px;
+    }
+    .dark-theme .navbar {
+      border-color: rgba(0,123,255,0.2);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 10px 16px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-theme .nav-links a {
+      color: var(--text-dark);
+    }
+    .nav-links a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-primary);
+      transition: left 0.3s ease;
+      z-index: -1;
+    }
+    .nav-links a:hover::before {
+      left: 0;
+    }
+    .nav-links a:hover {
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+    }
+    
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 900;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    /* Floating theme toggle */
+    .floating-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--gradient-primary);
+      color: white;
+      padding: 16px 20px;
+      font-size: 1.4rem;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(0,123,255,0.3);
+      z-index: 9999;
+      transition: all 0.3s ease;
+    }
+    .floating-toggle:hover {
+      transform: scale(1.1) rotate(10deg);
+      box-shadow: 0 12px 40px rgba(0,123,255,0.4);
+    }
+
+    /* Enhanced hero section - REDUCED SIZE */
+    .hero {
+      text-align: center;
+      margin-bottom: 45px;
+      position: relative;
+      padding: 45px 0;
+    }
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      position: relative;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 680px;
+      margin: 0 auto 30px;
+      color: var(--text-light);
+      opacity: 0.8;
+      line-height: 1.6;
+    }
+    .dark-theme .hero p {
+      color: var(--text-dark);
+    }
+
+    /* Modern phone lookup form - REDUCED SIZE */
+    .phone-form {
+      background: var(--card-light);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+      border: 2px solid rgba(0,123,255,0.1);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-theme .phone-form {
+      background: var(--card-dark);
+      border-color: rgba(0,123,255,0.2);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .phone-form::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+    .phone-form:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+      border-color: rgba(0,123,255,0.3);
+    }
+
+    .section-title {
+      font-weight: 900;
+      font-size: 1.9rem;
+      background: var(--gradient-primary);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .form-control {
+      flex: 3;
+      border-radius: 14px;
+      border: 3px solid #e9ecef;
+      padding: 16px 24px;
+      font-size: 1.1rem;
+      outline: none;
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.9);
+      color: var(--text-light);
+      font-weight: 500;
+    }
+    .dark-theme .form-control {
+      background: rgba(0,0,0,0.3);
+      border-color: #444;
+      color: var(--text-dark);
+    }
+    .form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 8px rgba(0,123,255,0.15);
+      transform: translateY(-2px);
+    }
+    .form-control::placeholder {
+      color: #6c757d;
+      font-weight: 400;
+    }
+
+    .btn {
+      flex: 1;
+      background: var(--gradient-primary);
+      border: none;
+      color: white;
+      font-weight: 800;
+      border-radius: 14px;
+      padding: 16px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transition: all 0.6s ease;
+      transform: translate(-50%, -50%);
+    }
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(0,123,255,0.4);
+    }
+    .btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .validation-error {
+      color: var(--danger);
+      margin-top: 16px;
+      font-size: 1rem;
+      display: none;
+      padding: 16px 20px;
+      border-radius: 12px;
+      background: rgba(220,53,69,0.1);
+      border-left: 4px solid var(--danger);
+      font-weight: 500;
+    }
+
+    /* Enhanced loading animation - REDUCED SIZE */
+    #loading {
+      display: none;
+      text-align: center;
+      padding: 45px 0;
+    }
+    #loading .spinner-container {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    #loading .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(0,123,255,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    .spinner-pulse {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+      opacity: 0.3;
+    }
+    @keyframes spin {
+      to {transform: rotate(360deg);}
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.2); opacity: 0.1; }
+    }
+    #loading p {
+      font-size: 1.1rem;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+    .dark-theme #loading p {
+      color: var(--text-dark);
+    }
+    .footer {
+  background: var(--card-light);
+  margin-top: 80px;
+  padding: 60px 0 40px;
+  border-radius: 20px 20px 0 0;
+  border: 2px solid rgba(0,123,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+.dark-theme .footer {
+  background: var(--card-dark);
+  border-color: rgba(0,123,255,0.2);
+}
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.footer-section h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+.dark-theme .footer-links a {
+  color: var(--text-dark);
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+  transform: translateX(5px);
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 30px;
+  border-top: 2px solid rgba(0,123,255,0.1);
+  color: var(--text-light);
+  font-weight: 500;
+}
+.dark-theme .footer-bottom {
+  border-color: rgba(0,123,255,0.2);
+  color: var(--text-dark);
+}
+
+.footer-logo {
+  font-size: 1.8rem;
+  font-weight: 900;
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-description {
+  color: var(--text-light);
+  opacity: 0.8;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.dark-theme .footer-description {
+  color: var(--text-dark);
+}
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+      
+      .form-control {
+        flex: 1;
+      }
+      
+      .btn {
+        flex: 1;
+        padding: 16px 24px;
+      }
+      
+      .nav-links {
+        gap: 12px;
+      }
+      
+      .nav-links a {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+      }
+      
+      #app {
+        margin: 15px auto;
+        padding: 25px 15px;
+      }
+      
+      .phone-form {
+        padding: 25px 15px;
+      }
+      /* Modern Footer Styles */
+
+
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .footer-container {
+    padding: 0 20px;
+  }
+  .nav-links a.active {
+  background: var(--gradient-primary);
+  color: white !important;
+  box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+}
+.nav-links a.active:hover {
+  color: white !important;
+}
+
+  .footer {
+    padding: 40px 0 30px;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <canvas id="starfield"></canvas>
+  <button class="floating-toggle" id="themeToggle" aria-label="Toggle dark/light theme">
+    <span class="material-icons">dark_mode</span>
+  </button>
+
+  <div id="app" role="main">
+    <!-- Navigation matching email_verify.html -->
+    <nav class="navbar" role="navigation" aria-label="Primary navigation">
+      <a href="/" class="logo" aria-label="Go to homepage">
+        <span class="material-icons" aria-hidden="true">phone</span> 
+        Webyverse
+      </a>
+      <div class="nav-links">
+        <a href="/" target="_blank" rel="noopener" aria-label="Main domain analyzer">
+          <span class="material-icons" aria-hidden="true">domain</span> Domain Analyzer
+        </a>
+        <a href="/email-verify" aria-label="Email verification tool">
+          <span class="material-icons" aria-hidden="true">email</span> Email Verify
+        </a>
+        <a href="/phone-docs" aria-label="Phone lookup documentation">
+          <span class="material-icons" aria-hidden="true">menu_book</span> Phone Docs
+        </a>
+        <a href="/phonehistory" aria-label="Phone lookup history">
+          <span class="material-icons" aria-hidden="true">history</span> History
+        </a>
+      </div>
+    </nav>
+
+    <!-- Enhanced hero section -->
+    <header class="hero" role="banner">
+      <h1 id="heroTitle">Advanced Phone Lookup & Reverse Search</h1>
+      <p>Comprehensive phone number analysis with carrier detection, timezone identification, social media account discovery, and reverse lookup. Get detailed insights about any phone number worldwide with advanced OSINT techniques.</p>
+    </header>
+
+    <!-- Modern phone lookup form -->
+    <section class="phone-form" aria-labelledby="form-header">
+      <h2 class="section-title" id="form-header">
+        <span class="material-icons" aria-hidden="true">phone_in_talk</span> 
+        Lookup Phone Number
+      </h2>
+      <form id="lookupForm" aria-describedby="validationError" novalidate>
+        <div class="input-group">
+          <input 
+            class="form-control" 
+            id="phoneInput" 
+            name="phone" 
+            type="tel" 
+            placeholder="Enter phone number (e.g., +1234567890 or 1234567890)" 
+            required 
+            aria-required="true" 
+            aria-label="Phone number input"
+          />
+          <button class="btn" id="lookupBtn" type="submit" aria-label="Lookup phone number">
+            <span class="material-icons" aria-hidden="true">search</span> 
+            Lookup Phone
+          </button>
+        </div>
+        
+        <!-- Help text -->
+        <div id="phone-help" style="
+          font-size: 0.85rem;
+          color: #6c757d;
+          margin-top: 10px;
+          padding: 6px 10px;
+          background: rgba(0,123,255,0.1);
+          border-radius: 6px;
+          border-left: 3px solid var(--accent);
+          text-align: center;
+        ">
+          Enter phone number with or without country code. We support international formats.
+        </div>
+        
+        <div id="validationError" class="validation-error" role="alert"></div>
+      </form>
+    </section>
+
+    <!-- Enhanced loading section -->
+    <section id="loading" role="alert" aria-live="assertive" aria-busy="true">
+      <div class="spinner-container">
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="spinner-pulse" aria-hidden="true"></div>
+      </div>
+      <p>Analyzing phone number, please wait...</p>
+      <div style="margin-top: 20px; color: #6c757d; font-size: 1rem;">
+        Parsing format • Identifying carrier • Checking social accounts • Reverse lookup • Timezone detection
+      </div>
+    </section>
+
+    <!-- Results section will be populated by JavaScript -->
+    <section id="results" aria-live="polite" aria-atomic="true"></section>
+  </div>
+  <!-- Modern Footer Section -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-grid">
+      <!-- Brand Section -->
+      <div class="footer-section">
+        <div class="footer-logo">
+          <span class="material-icons">analytics</span>
+          Webyverse
+        </div>
+        <p class="footer-description">
+          Comprehensive web analysis tools for domains, emails, and phone numbers. 
+          Get detailed insights and security analysis for better online presence.
+        </p>
+      </div>
+
+      <!-- Tools Section -->
+      <div class="footer-section">
+        <h3>
+          <span class="material-icons">build</span>
+          Analysis Tools
+        </h3>
+        <ul class="footer-links">
+          <li><a href="/"><span class="material-icons">domain</span>Domain Analyzer</a></li>
+          <li><a href="/email-verify"><span class="material-icons">verified_user</span>Email Verification</a></li>
+          <li><a href="/phone-lookup"><span class="material-icons">phone</span>Phone Lookup</a></li>
+        </ul>
+      </div>
+
+      <!-- History & Reports -->
+      <div class="footer-section">
+        <h3>
+          <span class="material-icons">history</span>
+          History & Reports
+        </h3>
+        <ul class="footer-links">
+          <li><a href="/history"><span class="material-icons">timeline</span>Domain History</a></li>
+          <li><a href="/emailhistory"><span class="material-icons">email</span>Email History</a></li>
+          <li><a href="/phonehistory"><span class="material-icons">phone_callback</span>Phone History</a></li>
+        </ul>
+      </div>
+
+      <!-- Documentation -->
+      <div class="footer-section">
+        <h3>
+          <span class="material-icons">menu_book</span>
+          Documentation
+        </h3>
+        <ul class="footer-links">
+          <li><a href="/documentation"><span class="material-icons">description</span>Domain Docs</a></li>
+          <li><a href="/emaildocs"><span class="material-icons">mail_outline</span>Email Docs</a></li>
+          <li><a href="/phonedocs"><span class="material-icons">phone_in_talk</span>Phone Docs</a></li>
+        </ul>
+      </div>
+
+      <!-- Company Info -->
+      <div class="footer-section">
+        <h3>
+          <span class="material-icons">business</span>
+          Company
+        </h3>
+        <ul class="footer-links">
+          <li><a href="/about"><span class="material-icons">info</span>About Us</a></li>
+          <li><a href="/contact"><span class="material-icons">contact_mail</span>Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2025 Webyverse. All rights reserved. | Advanced Web Analysis Platform</p>
+    </div>
+  </div>
+</footer>
+<script>
+  // Enhanced theme toggle with smooth transitions
+  const body = document.body;
+  const toggle = document.getElementById('themeToggle');
+
+  function updateThemeToggle() {
+    const isDark = body.classList.contains('dark-theme');
+    const icon = toggle.querySelector('.material-icons');
+    icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+    localStorage.setItem('darkMode', isDark);
+  }
+
+  toggle.addEventListener('click', () => {
+    body.classList.toggle('dark-theme');
+    updateThemeToggle();
+    
+    // Add smooth transition effect
+    toggle.style.transform = 'scale(0.8) rotate(180deg)';
+    setTimeout(() => {
+      toggle.style.transform = 'scale(1) rotate(0deg)';
+    }, 200);
+  });
+
+  // Initialize theme from localStorage
+  if (localStorage.getItem('darkMode') === 'true') {
+    body.classList.add('dark-theme');
+  }
+  updateThemeToggle();
+
+  // Enhanced form validation and submission
+  const form = document.getElementById('lookupForm');
+  const phoneInput = document.getElementById('phoneInput');
+  const lookupBtn = document.getElementById('lookupBtn');
+  const loading = document.getElementById('loading');
+  const results = document.getElementById('results');
+  const validationError = document.getElementById('validationError');
+
+  // Enhanced phone validation regex
+  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+
+  // Real-time validation feedback
+  phoneInput.addEventListener('input', function() {
+    const phone = this.value.trim().replace(/\D/g, '');
+    validationError.style.display = 'none';
+    
+    if (phone && phone.length < 7) {
+      this.style.borderColor = '#dc3545';
+      this.style.boxShadow = '0 0 0 8px rgba(220,53,69,0.15)';
+    } else if (phone && phone.length >= 7) {
+      this.style.borderColor = '#28a745';
+      this.style.boxShadow = '0 0 0 8px rgba(40,167,69,0.15)';
+    } else {
+      this.style.borderColor = '#e9ecef';
+      this.style.boxShadow = 'none';
+    }
+  });
+  // Enhanced results rendering function
+  function createEnhancedResultsHTML(data) {
+    const isValid = data.basic_info?.is_valid === true;
+    const validityClass = isValid ? 'success' : 'danger';
+    const validityIcon = isValid ? 'check_circle' : 'error';
+    const validityText = isValid ? 'Valid Phone Number' : 'Invalid Phone Number';
+    const validityColor = isValid ? 'var(--success)' : 'var(--danger)';
+
+    return `
+      <div style="margin-top: 50px; animation: slideInUp 0.6s ease-out;">
+        <!-- Main Validity Status Card -->
+        <div style="
+          background: ${isValid ? 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)' : 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)'};
+          border: 3px solid ${validityColor};
+          border-radius: 20px;
+          padding: 40px;
+          text-align: center;
+          margin-bottom: 40px;
+          box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+          position: relative;
+          overflow: hidden;
+        ">
+          <div style="
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+          "></div>
+          
+          <div style="position: relative; z-index: 2;">
+            <div style="
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              width: 80px;
+              height: 80px;
+              background: ${validityColor};
+              border-radius: 50%;
+              margin-bottom: 20px;
+              box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            ">
+              <span class="material-icons" style="font-size: 40px; color: white;">${validityIcon}</span>
+            </div>
+            
+            <h2 style="
+              font-size: 2.5rem;
+              font-weight: 900;
+              color: ${validityColor};
+              margin-bottom: 12px;
+              text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            ">
+              ${validityText}
+            </h2>
+            
+            <p style="
+              font-size: 1.3rem;
+              color: #495057;
+              margin-bottom: 20px;
+              font-weight: 500;
+            ">
+              ${data.phone_number}
+            </p>
+            
+            <div style="
+              display: inline-block;
+              padding: 12px 24px;
+              background: rgba(255,255,255,0.8);
+              border-radius: 25px;
+              font-weight: 600;
+              color: ${validityColor};
+              border: 2px solid ${validityColor};
+            ">
+              Confidence Score: ${data.confidence_score || 'N/A'}/100
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Info Cards -->
+        <div style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 25px;
+          margin-bottom: 40px;
+        ">
+          ${createPhoneAnalysisCard('Format Valid', data.basic_info?.is_valid, 'format_list_bulleted', 'Phone number format is correct')}
+          ${createPhoneAnalysisCard('Carrier Found', data.carrier_info?.name !== 'Unknown', 'cell_tower', data.carrier_info?.name || 'Carrier information')}
+          ${createPhoneAnalysisCard('Location Known', data.basic_info?.country_name !== '', 'location_on', data.basic_info?.country_name || 'Geographic location')}
+          ${createPhoneAnalysisCard('Timezone Available', data.basic_info?.timezone !== null, 'schedule', data.basic_info?.timezone?.timezone_name || 'Timezone information')}
+        </div>
+
+        <!-- Comprehensive Details Section -->
+        <div style="
+          background: var(--card-light);
+          border-radius: 20px;
+          padding: 40px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+          border: 1px solid rgba(0,123,255,0.1);
+        " class="dark-theme-card">
+          <h3 style="
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          ">
+            <span class="material-icons">analytics</span>
+            Detailed Phone Analysis Report
+          </h3>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+            <!-- Phone Information -->
+            <div class="detail-group">
+              <h4 style="color: var(--accent); margin-bottom: 15px; font-weight: 700;">
+                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">phone</span>
+                Phone Information
+              </h4>
+              <div class="detail-item">
+                <strong>International:</strong> ${data.basic_info?.formatted_international || 'N/A'}
+              </div>
+              <div class="detail-item">
+                <strong>National:</strong> ${data.basic_info?.formatted_national || 'N/A'}
+              </div>
+              <div class="detail-item">
+                <strong>E164 Format:</strong> ${data.basic_info?.formatted_e164 || 'N/A'}
+              </div>
+              <div class="detail-item">
+                <strong>Country Code:</strong> ${data.basic_info?.country_code || 'N/A'}
+              </div>
+              <div class="detail-item">
+                <strong>National Number:</strong> ${data.basic_info?.national_number || 'N/A'}
+              </div>
+            </div>
+
+            <!-- Location & Carrier -->
+            <div class="detail-group">
+              <h4 style="color: var(--accent); margin-bottom: 15px; font-weight: 700;">
+                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">location_on</span>
+                Location & Carrier
+              </h4>
+              <div class="detail-item">
+                <strong>Country:</strong> ${data.basic_info?.country_name || 'Unknown'}
+              </div>
+              <div class="detail-item">
+                <strong>Location:</strong> ${data.basic_info?.location || 'Unknown'}
+              </div>
+              <div class="detail-item">
+                <strong>Carrier:</strong> ${data.carrier_info?.name || 'Unknown'}
+              </div>
+              <div class="detail-item">
+                <strong>Line Type:</strong> ${data.carrier_info?.type || 'Unknown'}
+              </div>
+              <div class="detail-item">
+                <strong>Network Type:</strong> ${data.basic_info?.line_type || 'Unknown'}
+              </div>
+            </div>
+
+            <!-- Timezone Information -->
+            ${data.basic_info?.timezone ? `
+            <div class="detail-group">
+              <h4 style="color: var(--accent); margin-bottom: 15px; font-weight: 700;">
+                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">schedule</span>
+                Timezone Information
+              </h4>
+              <div class="detail-item">
+                <strong>Timezone:</strong> ${data.basic_info.timezone.timezone_name}
+              </div>
+              <div class="detail-item">
+                <strong>Current Time:</strong> 
+                <span style="color: var(--success); font-weight: 600;">
+                  ${data.basic_info.timezone.current_time}
+                </span>
+              </div>
+              <div class="detail-item">
+                <strong>UTC Offset:</strong> ${data.basic_info.timezone.utc_offset}
+              </div>
+              <div class="detail-item">
+                <strong>Abbreviation:</strong> ${data.basic_info.timezone.timezone_abbreviation}
+              </div>
+            </div>
+            ` : ''}
+
+            <!-- Technical Details -->
+            <div class="detail-group">
+              <h4 style="color: var(--accent); margin-bottom: 15px; font-weight: 700;">
+                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">settings</span>
+                Technical Details
+              </h4>
+              <div class="detail-item">
+                <strong>Valid Number:</strong> 
+                <span style="color: ${data.basic_info?.is_valid ? 'var(--success)' : 'var(--danger)'};">
+                  ${data.basic_info?.is_valid ? '✅ Yes' : '❌ No'}
+                </span>
+              </div>
+              <div class="detail-item">
+                <strong>Possible Number:</strong> 
+                <span style="color: ${data.basic_info?.is_possible ? 'var(--success)' : 'var(--danger)'};">
+                  ${data.basic_info?.is_possible ? '✅ Yes' : '❌ No'}
+                </span>
+              </div>
+              <div class="detail-item">
+                <strong>Analysis Time:</strong> ${data.analysis_duration || 'N/A'}s
+              </div>
+              <div class="detail-item">
+                <strong>Confidence Score:</strong> 
+                <span style="color: ${getScoreColor(data.confidence_score)}; font-weight: 700;">
+                  ${data.confidence_score || 'N/A'}/100
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Media Accounts Section -->
+          ${data.social_accounts && data.social_accounts.length > 0 ? `
+            <div style="margin-top: 30px; padding: 25px; background: rgba(0,123,255,0.1); border-radius: 12px; border-left: 4px solid var(--accent);">
+              <h4 style="color: var(--accent); margin-bottom: 15px; font-weight: 700;">
+                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">share</span>
+                Potential Social Media Accounts
+              </h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                ${data.social_accounts.map(account => `
+                  <div style="
+                    background: rgba(255,255,255,0.8);
+                    padding: 15px;
+                    border-radius: 8px;
+                    border: 1px solid rgba(0,123,255,0.2);
+                  ">
+                    <div style="font-weight: 600; color: var(--accent); margin-bottom: 5px;">
+                      ${account.platform}
+                    </div>
+                    <div style="font-size: 0.9rem; color: #6c757d; margin-bottom: 8px;">
+                      ${account.status}
+                    </div>
+                    <a href="${account.url}" target="_blank" style="
+                      color: var(--accent);
+                      text-decoration: none;
+                      font-size: 0.85rem;
+                      display: flex;
+                      align-items: center;
+                      gap: 4px;
+                    ">
+                      <span class="material-icons" style="font-size: 16px;">open_in_new</span>
+                      Check Account
+                    </a>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Reverse Lookup Results -->
+          ${data.reverse_lookup ? `
+            <div style="margin-top: 30px; padding: 25px; background: rgba(40,167,69,0.1); border-radius: 12px; border-left: 4px solid var(--success);">
+              <h4 style="color: var(--success); margin-bottom: 15px; font-weight: 700;">
+                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">person_search</span>
+                Reverse Lookup Information
+              </h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div>
+                  <h5 style="color: var(--accent); margin-bottom: 10px;">Owner Information</h5>
+                  <div class="detail-item"><strong>Name:</strong> ${data.reverse_lookup.owner_info?.name || 'Not Available'}</div>
+                  <div class="detail-item"><strong>Address:</strong> ${data.reverse_lookup.owner_info?.address || 'Not Available'}</div>
+                  <div class="detail-item"><strong>Email:</strong> ${data.reverse_lookup.owner_info?.email || 'Not Available'}</div>
+                </div>
+                <div>
+                  <h5 style="color: var(--accent); margin-bottom: 10px;">Business Information</h5>
+                  <div class="detail-item"><strong>Company:</strong> ${data.reverse_lookup.business_info?.company_name || 'Not Available'}</div>
+                  <div class="detail-item"><strong>Website:</strong> ${data.reverse_lookup.business_info?.website || 'Not Available'}</div>
+                  <div class="detail-item"><strong>Industry:</strong> ${data.reverse_lookup.business_info?.industry || 'Not Available'}</div>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Data Breach Information -->
+          ${data.breach_info && data.breach_info.total_breaches > 0 ? `
+            <div style="margin-top: 30px; padding: 25px; background: rgba(220,53,69,0.1); border-radius: 12px; border-left: 4px solid var(--danger);">
+              <h4 style="color: var(--danger); margin-bottom: 15px; font-weight: 700;">
+                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">security</span>
+                Data Breach Information
+              </h4>
+              <div class="detail-item">
+                <strong>Total Breaches Found:</strong> 
+                <span style="color: var(--danger); font-weight: 600;">
+                  ${data.breach_info.total_breaches}
+                </span>
+              </div>
+              <div class="detail-item">
+                <strong>Last Checked:</strong> ${data.breach_info.last_checked}
+              </div>
+            </div>
+          ` : `
+            <div style="margin-top: 30px; padding: 25px; background: rgba(40,167,69,0.1); border-radius: 12px; border-left: 4px solid var(--success);">
+              <h4 style="color: var(--success); margin-bottom: 10px; font-weight: 700;">
+                                <span class="material-icons" style="vertical-align: middle; margin-right: 8px;">shield</span>
+                No Data Breaches Found
+              </h4>
+              <p style="margin: 0; color: var(--success); font-weight: 500;">This phone number was not found in any known data breaches.</p>
+            </div>
+          `}
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="margin-top: 40px; text-align: center; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+          <button 
+            onclick="copyPhoneResults('${data.phone_number}', ${isValid})" 
+            style="
+              background: var(--gradient-info);
+              color: white;
+              border: none;
+              padding: 15px 30px;
+              border-radius: 25px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            "
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(23,162,184,0.3)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+          >
+            <span class="material-icons">content_copy</span>
+            Copy Results
+          </button>
+          
+          <button
+            onclick="lookupAnotherPhone()" 
+            style="
+              background: var(--gradient-primary);
+              color: white;
+              border: none;
+              padding: 15px 30px;
+              border-radius: 25px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            "
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,123,255,0.3)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+          >
+            <span class="material-icons">refresh</span>
+            Lookup Another Phone
+          </button>
+
+          <button
+            onclick="exportPhoneData('${data.phone_number}')"
+            style="
+              background: var(--gradient-success);
+              color: white;
+              border: none;
+              padding: 15px 30px;
+              border-radius: 25px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            "
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(40,167,69,0.3)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+          >
+            <span class="material-icons">download</span>
+            Export Data
+          </button>
+        </div>
+      </div>
+
+      <style>
+        @keyframes slideInUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(30px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+        
+        .detail-group {
+          background: rgba(255,255,255,0.5);
+          padding: 20px;
+          border-radius: 12px;
+          border: 1px solid rgba(0,123,255,0.1);
+        }
+        
+        .dark-theme .detail-group {
+          background: rgba(0,0,0,0.2);
+          border-color: rgba(0,123,255,0.2);
+        }
+        
+        .detail-item {
+          margin-bottom: 12px;
+          font-size: 1rem;
+          line-height: 1.5;
+          color: var(--text-light);
+        }
+        
+        .dark-theme .detail-item {
+          color: var(--text-dark);
+        }
+        
+        .detail-item strong {
+          color: var(--accent);
+          font-weight: 600;
+          margin-right: 8px;
+        }
+        
+        .dark-theme-card {
+          background: var(--card-light) !important;
+        }
+        
+        .dark-theme .dark-theme-card {
+          background: var(--card-dark) !important;
+          border-color: rgba(0,123,255,0.2) !important;
+        }
+      </style>
+    `;
+  }
+
+  // Helper function to create phone analysis cards
+  function createPhoneAnalysisCard(title, status, icon, description) {
+    const isValid = status === true || status === 'valid' || status === 'active';
+    const cardColor = isValid ? 'var(--success)' : 'var(--danger)';
+    const bgColor = isValid ? 'rgba(40,167,69,0.1)' : 'rgba(220,53,69,0.1)';
+    const iconName = isValid ? 'check_circle' : 'error';
+
+    return `
+      <div style="
+        background: ${bgColor};
+        border: 2px solid ${cardColor};
+        border-radius: 16px;
+        padding: 25px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      " 
+      onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)';"
+      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+      >
+        <div style="
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 50px;
+          height: 50px;
+          background: ${cardColor};
+          border-radius: 50%;
+          margin-bottom: 15px;
+        ">
+          <span class="material-icons" style="color: white; font-size: 24px;">${iconName}</span>
+        </div>
+        
+        <h4 style="
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: ${cardColor};
+          margin-bottom: 8px;
+        ">${title}</h4>
+        
+        <p style="
+          margin: 0;
+          color: #6c757d;
+          font-size: 0.9rem;
+          line-height: 1.4;
+        ">${description}</p>
+        
+        <div style="
+          margin-top: 12px;
+          font-weight: 600;
+          color: ${cardColor};
+        ">
+          ${isValid ? '✅ Found' : '❌ Not Found'}
+        </div>
+      </div>
+    `;
+  }
+
+  // Helper functions for scoring and display
+  function getScoreColor(score) {
+    if (score >= 80) return 'var(--success)';
+    if (score >= 60) return 'var(--warning)';
+    if (score >= 40) return '#fd7e14';
+    return 'var(--danger)';
+  }
+
+  // Enhanced form submission with better UX
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    
+    // Reset states
+    validationError.style.display = 'none';
+    results.style.display = 'none';
+    
+    const phone = phoneInput.value.trim();
+
+    // Enhanced validation
+    if (!phone) {
+      showValidationError('Please enter a phone number to lookup.');
+      return;
+    }
+
+    if (phone.replace(/\D/g, '').length < 7) {
+      showValidationError('Please enter a valid phone number with at least 7 digits.');
+      phoneInput.focus();
+      return;
+    }
+
+    // Show enhanced loading with animations
+    showLoading(true);
+    
+    try {
+      const response = await fetch('/lookup-phone', {
+        method: 'POST',
+        body: new URLSearchParams({ phone }),
+        headers: { 
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      // Enhanced results display with animations
+      displayResults(data);
+      
+      // Track successful lookup
+      trackPhoneLookup(phone, data);
+
+    } catch (err) {
+      console.error('Phone lookup error:', err);
+      showValidationError(getErrorMessage(err.message));
+    } finally {
+      showLoading(false);
+    }
+  });
+
+  // Enhanced error handling with comprehensive error types
+  function getErrorMessage(errorMsg) {
+    if (errorMsg.includes('fetch')) {
+      return 'Network error: Unable to connect to lookup service. Please check your internet connection and try again.';
+    }
+    if (errorMsg.includes('timeout')) {
+      return 'Request timeout: The lookup process is taking longer than expected. This may be due to high server load. Please try again in a moment.';
+    }
+    if (errorMsg.includes('Invalid phone')) {
+      return 'Invalid phone number format. Please enter a valid phone number with country code (e.g., +1234567890).';
+    }
+    if (errorMsg.includes('parsing')) {
+      return 'Phone parsing error: Unable to parse the phone number format. Try including the country code or check the number format.';
+    }
+    if (errorMsg.includes('rate limit')) {
+      return 'Rate limit exceeded: Too many requests. Please wait a moment before trying again.';
+    }
+    if (errorMsg.includes('service unavailable')) {
+      return 'Service temporarily unavailable: Our phone lookup service is currently experiencing issues. Please try again later.';
+    }
+    if (errorMsg.includes('unauthorized')) {
+      return 'Authorization error: There was an issue with the lookup service. Please contact support if this persists.';
+    }
+    return `Lookup failed: ${errorMsg}`;
+  }
+
+  function showValidationError(message) {
+    validationError.textContent = message;
+    validationError.style.display = 'block';
+    validationError.style.animation = 'slideInUp 0.3s ease-out';
+    
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+      if (validationError.style.display === 'block') {
+        validationError.style.animation = 'slideInUp 0.3s ease-out reverse';
+        setTimeout(() => {
+          validationError.style.display = 'none';
+        }, 300);
+      }
+    }, 10000);
+  }
+
+  function showLoading(show) {
+    if (show) {
+      loading.style.display = 'block';
+      lookupBtn.disabled = true;
+      lookupBtn.innerHTML = '<span class="material-icons">hourglass_empty</span> Looking up...';
+      
+      // Add pulsing effect to loading button
+      lookupBtn.style.animation = 'pulse 2s infinite';
+      
+      // Disable input during lookup
+      phoneInput.disabled = true;
+      phoneInput.style.opacity = '0.6';
+    } else {
+      loading.style.display = 'none';
+      lookupBtn.disabled = false;
+      lookupBtn.innerHTML = '<span class="material-icons">search</span> Lookup Phone';
+      lookupBtn.style.animation = 'none';
+      
+      // Re-enable input
+      phoneInput.disabled = false;
+      phoneInput.style.opacity = '1';
+    }
+  }
+
+  function displayResults(data) {
+    results.innerHTML = createEnhancedResultsHTML(data);
+    results.style.display = 'block';
+    
+    // Add fade-in animation
+    results.style.opacity = '0';
+    results.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+      results.style.transition = 'all 0.6s ease-out';
+      results.style.opacity = '1';
+      results.style.transform = 'translateY(0)';
+    }, 50);
+    
+    // Smooth scroll to results with offset for header
+    setTimeout(() => {
+      const headerHeight = 80;
+      const targetPosition = results.offsetTop - headerHeight;
+      
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+    }, 100);
+
+    // Initialize tooltips and interactive elements
+    initializeResultsInteractions();
+  }
+
+  // Initialize interactive elements in results
+  function initializeResultsInteractions() {
+    // Add hover effects to detail items
+    document.querySelectorAll('.detail-item').forEach(item => {
+      item.addEventListener('mouseenter', function() {
+        this.style.background = 'rgba(0,123,255,0.05)';
+        this.style.borderRadius = '6px';
+        this.style.padding = '4px 8px';
+        this.style.transition = 'all 0.2s ease';
+      });
+      
+      item.addEventListener('mouseleave', function() {
+        this.style.background = 'transparent';
+        this.style.padding = '0';
+      });
+    });
+
+    // Add click-to-copy functionality for phone numbers
+    document.querySelectorAll('.detail-item').forEach(item => {
+      const text = item.textContent;
+      if (text.includes('+') && text.match(/\+?\d{7,}/)) {
+        item.style.cursor = 'pointer';
+        item.title = 'Click to copy phone number';
+        
+        item.addEventListener('click', function() {
+          const phoneMatch = text.match(/\+?\d{7,}/);
+          if (phoneMatch) {
+            navigator.clipboard.writeText(phoneMatch[0]).then(() => {
+              showNotification(`Phone number ${phoneMatch[0]} copied!`, 'success');
+            });
+          }
+        });
+      }
+    });
+
+    // Add expand/collapse functionality for long text
+    document.querySelectorAll('.detail-item').forEach(item => {
+      if (item.textContent.length > 100) {
+        const fullText = item.textContent;
+        const shortText = fullText.substring(0, 100) + '...';
+        
+        item.innerHTML = shortText + ' <span style="color: var(--accent); cursor: pointer; font-weight: 600;">Show more</span>';
+        
+        item.querySelector('span').addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (this.textContent === 'Show more') {
+            item.innerHTML = fullText + ' <span style="color: var(--accent); cursor: pointer; font-weight: 600;">Show less</span>';
+            item.querySelector('span').addEventListener('click', arguments.callee);
+          } else {
+            item.innerHTML = shortText + ' <span style="color: var(--accent); cursor: pointer; font-weight: 600;">Show more</span>';
+            item.querySelector('span').addEventListener('click', arguments.callee);
+          }
+        });
+      }
+    });
+  }
+
+  // Utility functions for enhanced UX
+  function copyPhoneResults(phone, isValid) {
+    const timestamp = new Date().toLocaleString();
+    const resultData = document.getElementById('results');
+    let detailsText = '';
+    
+    // Extract key information from results
+    const detailItems = resultData.querySelectorAll('.detail-item');
+    detailItems.forEach(item => {
+      const text = item.textContent.trim();
+      if (text && !text.includes('Show more') && !text.includes('Show less')) {
+        detailsText += text + '\n';
+      }
+    });
+
+    const resultText = `
+WEBYVERSE PHONE LOOKUP RESULTS
+===============================
+Phone Number: ${phone}
+Status: ${isValid ? 'Valid & Active' : 'Invalid or Inactive'}
+Analysis Date: ${timestamp}
+Analyzed by: Webyverse Phone Lookup Tool
+
+DETAILED ANALYSIS:
+${detailsText}
+
+---
+Generated by: Webyverse.net
+Service: Advanced Phone Lookup & Reverse Search
+URL: ${window.location.href}
+`;
+
+    navigator.clipboard.writeText(resultText).then(() => {
+      showNotification('Complete phone lookup results copied to clipboard!', 'success');
+    }).catch(() => {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = resultText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showNotification('Results copied to clipboard!', 'success');
+    });
+  }
+
+  function lookupAnotherPhone() {
+    // Smooth fade out of results
+    if (results.style.display === 'block') {
+      results.style.transition = 'all 0.3s ease-out';
+      results.style.opacity = '0';
+      results.style.transform = 'translateY(-20px)';
+      
+      setTimeout(() => {
+        results.style.display = 'none';
+        results.style.opacity = '1';
+        results.style.transform = 'translateY(0)';
+      }, 300);
+    }
+    
+    // Reset form state
+    phoneInput.value = '';
+    phoneInput.style.borderColor = '#e9ecef';
+    phoneInput.style.boxShadow = 'none';
+    validationError.style.display = 'none';
+    phoneInput.focus();
+    
+    // Add focus ring animation
+    phoneInput.style.transition = 'all 0.3s ease';
+    phoneInput.style.transform = 'scale(1.02)';
+    setTimeout(() => {
+      phoneInput.style.transform = 'scale(1)';
+    }, 200);
+    
+    // Smooth scroll to form
+    document.querySelector('.phone-form').scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'center' 
+    });
+
+    // Track analytics
+    trackPhoneEvent('new_lookup_started');
+  }
+
+  function exportPhoneData(phone) {
+    try {
+      const safePhone = phone.replace('+', 'plus_').replace(' ', '_').replace('(', '').replace(')', '').replace('-', '');
+      const exportUrl = `/api/export-phone/${encodeURIComponent(phone)}`;
+      
+      // Create temporary download link
+      const link = document.createElement('a');
+      link.href = exportUrl;
+      link.download = `phone_lookup_${safePhone}_${new Date().getTime()}.json`;
+      link.target = '_blank';
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showNotification('Phone lookup data export started!', 'success');
+      trackPhoneEvent('data_exported', { phone: phone });
+      
+    } catch (error) {
+      console.error('Export error:', error);
+      showNotification('Export failed. Please try again.', 'error');
+    }
+  }
+
+  function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    const bgColor = type === 'success' ? 'var(--success)' : 
+                   type === 'error' ? 'var(--danger)' : 
+                   type === 'warning' ? 'var(--warning)' : 'var(--info)';
+    const icon = type === 'success' ? 'check_circle' : 
+                type === 'error' ? 'error' : 
+                type === 'warning' ? 'warning' : 'info';
+    
+    notification.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 100px;
+        right: 30px;
+        z-index: 10000;
+        background: ${bgColor};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 350px;
+        word-wrap: break-word;
+      ">
+        <span class="material-icons">${icon}</span>
+        <span>${message}</span>
+        <button onclick="this.parentElement.parentElement.remove()" style="
+          background: rgba(255,255,255,0.2);
+          border: none;
+          color: white;
+          border-radius: 50%;
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: auto;
+          font-size: 18px;
+        ">×</button>
+      </div>
+      <style>
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      </style>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.style.animation = 'slideInRight 0.3s ease-out reverse';
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.remove();
+          }
+        }, 300);
+      }
+    }, 5000);
+  }
+
+  function trackPhoneLookup(phone, data) {
+    // Privacy-friendly analytics (no personal data stored)
+    const analyticsData = {
+      action: 'phone_lookup_completed',
+      country_code: data.basic_info?.country_code || 'unknown',
+      is_valid: data.basic_info?.is_valid || false,
+      has_carrier: data.carrier_info?.name !== 'Unknown',
+      has_timezone: !!data.basic_info?.timezone,
+      confidence_score: data.confidence_score || 0,
+      analysis_duration: data.analysis_duration || 0,
+      timestamp: Date.now(),
+      user_agent: navigator.userAgent.substring(0, 50), // Truncated for privacy
+      screen_resolution: `${screen.width}x${screen.height}`,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
+    
+    console.log('Phone lookup Analytics:', analyticsData);
+    
+    // Could send to analytics service if needed
+    // fetch('/api/analytics', { method: 'POST', body: JSON.stringify(analyticsData) });
+  }
+
+  function trackPhoneEvent(eventName, additionalData = {}) {
+    const eventData = {
+      event: eventName,
+      timestamp: Date.now(),
+      page: 'phone_lookup',
+      ...additionalData
+    };
+    
+    console.log('Phone Event:', eventData);
+  }
+
+  // Enhanced keyboard shortcuts and accessibility
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey || e.metaKey) {
+      switch(e.key) {
+        case 'k':
+          e.preventDefault();
+          phoneInput.focus();
+          phoneInput.select();
+          trackPhoneEvent('keyboard_shortcut_focus');
+          break;
+        case 'Enter':
+          if (document.activeElement === phoneInput && phoneInput.value.trim()) {
+            e.preventDefault();
+            form.dispatchEvent(new Event('submit'));
+            trackPhoneEvent('keyboard_shortcut_submit');
+          }
+          break;
+        case 'r':
+          if (results.style.display === 'block') {
+            e.preventDefault();
+            lookupAnotherPhone();
+            trackPhoneEvent('keyboard_shortcut_reset');
+          }
+          break;
+        case 's':
+          if (results.style.display === 'block') {
+            e.preventDefault();
+            const phoneNumber = document.querySelector('#results p')?.textContent;
+            if (phoneNumber) {
+              exportPhoneData(phoneNumber);
+              trackPhoneEvent('keyboard_shortcut_export');
+            }
+          }
+          break;
+      }
+    }
+    
+    if (e.key === 'Escape') {
+      if (results.style.display === 'block') {
+        lookupAnotherPhone();
+        trackPhoneEvent('escape_key_reset');
+      } else if (validationError.style.display === 'block') {
+        validationError.style.display = 'none';
+        trackPhoneEvent('escape_key_dismiss_error');
+      }
+    }
+    
+    // Quick country code shortcuts
+    if (e.altKey && phoneInput === document.activeElement) {
+      const countryShortcuts = {
+        '1': '+1',    // US/Canada
+        '4': '+44',   // UK
+        '9': '+91',   // India
+        '8': '+86',   // China
+        '3': '+33',   // France
+        '4': '+49',   // Germany (Alt+4 twice would conflict, handle differently)
+        '8': '+81',   // Japan
+        '7': '+7',    // Russia
+        '5': '+55',   // Brazil
+        '6': '+61'    // Australia
+      };
+      
+      const code = countryShortcuts[e.key];
+      if (code && !phoneInput.value.startsWith('+')) {
+        e.preventDefault();
+        phoneInput.value = code + phoneInput.value;
+        trackPhoneEvent('country_code_shortcut', { code });
+      }
+    }
+  });
+
+  // Advanced phone number formatting as user types
+  phoneInput.addEventListener('input', function(e) {
+    let value = this.value;
+    const cursorPosition = this.selectionStart;
+    
+    // Auto-format common patterns
+    if (value.length === 10 && !value.startsWith('+') && /^\d+$/.test(value)) {
+      // US number without country code
+      if (value.startsWith('1')) {
+        value = '+' + value;
+      } else {
+        // Assume US if 10 digits
+        value = '+1' + value;
+      }
+      this.value = value;
+    }
+    
+    // Real-time validation with enhanced feedback
+    const cleanPhone = value.replace(/\D/g, '');
+    validationError.style.display = 'none';
+    
+    if (cleanPhone.length > 0) {
+      if (cleanPhone.length < 7) {
+        this.style.borderColor = '#dc3545';
+        this.style.boxShadow = '0 0 0 8px rgba(220,53,69,0.15)';
+      } else if (cleanPhone.length >= 7 && cleanPhone.length <= 15) {
+        this.style.borderColor = '#28a745';
+        this.style.boxShadow = '0 0 0 8px rgba(40,167,69,0.15)';
+      } else if (cleanPhone.length > 15) {
+        this.style.borderColor = '#ffc107';
+        this.style.boxShadow = '0 0 0 8px rgba(255,193,7,0.15)';
+      }
+    } else {
+      this.style.borderColor = '#e9ecef';
+      this.style.boxShadow = 'none';
+    }
+    
+    // Update character counter
+    updateCharacterCounter(cleanPhone.length);
+  });
+
+  function updateCharacterCounter(length) {
+    let counter = document.getElementById('charCounter');
+    if (!counter) {
+      counter = document.createElement('div');
+      counter.id = 'charCounter';
+      counter.style.cssText = `
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-align: right;
+        margin-top: 4px;
+      `;
+      phoneInput.parentElement.appendChild(counter);
+    }
+    
+    const status = length === 0 ? '' : 
+                   length < 7 ? ` - Too short` :
+                   length > 15 ? ` - Too long` : ` - Valid length`;
+    
+    counter.textContent = `${length} digits${status}`;
+    counter.style.color = length === 0 ? '#6c757d' :
+                          length < 7 || length > 15 ? '#dc3545' : '#28a745';
+  }
+
+  // Initialize page with enhanced features
+  document.addEventListener('DOMContentLoaded', function() {
+    phoneInput.focus();
+    
+    // Add smooth animations to existing elements
+    const style = document.createElement('style');
+    style.textContent = `
+      .phone-form { 
+        animation: slideInUp 0.6s ease-out; 
+      }
+      .hero { 
+        animation: slideInUp 0.4s ease-out; 
+      }
+      .navbar { 
+        animation: slideInUp 0.2s ease-out; 
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      
+      /* Enhanced focus states for accessibility */
+      .form-control:focus-visible {
+        outline: 3px solid rgba(0,123,255,0.5);
+        outline-offset: 2px;
+      }
+      
+      .btn:focus-visible {
+        outline: 3px solid rgba(255,255,255,0.5);
+        outline-offset: 2px;
+      }
+      
+      /* Smooth transitions for all interactive elements */
+      .detail-item, .nav-links a, .btn, .form-control {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      /* Enhanced loading states */
+      .btn:disabled {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .btn:disabled::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        animation: shimmer 1.5s infinite;
+      }
+      
+      @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Add helpful tooltips
+    addTooltips();
+    
+    // Initialize performance monitoring
+    trackPhoneEvent('page_loaded', {
+      load_time: performance.now(),
+      referrer: document.referrer
+    });
+    
+    // Add keyboard shortcut help
+    addKeyboardShortcutHelp();
+  });
+
+  function addTooltips() {
+    const tooltips = [
+      { element: phoneInput, text: 'Enter phone number with or without country code. Keyboard shortcuts: Alt+[1-9] for country codes' },
+      { element: lookupBtn, text: 'Click to start phone lookup analysis. Keyboard shortcut: Ctrl+Enter' },
+      { element: toggle, text: 'Switch between light and dark themes' }
+    ];
+    
+    tooltips.forEach(({ element, text }) => {
+      if (element) {
+        element.setAttribute('title', text);
+      }
+    });
+  }
+
+  function addKeyboardShortcutHelp() {
+    const helpButton = document.createElement('button');
+        helpButton.innerHTML = `
+      <span class="material-icons" style="font-size: 18px;">help_outline</span>
+    `;
+    helpButton.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0,123,255,0.1);
+      color: var(--accent);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    `;
+    
+    helpButton.addEventListener('click', showKeyboardShortcuts);
+    helpButton.addEventListener('mouseenter', function() {
+      this.style.background = 'var(--accent)';
+      this.style.color = 'white';
+      this.style.transform = 'scale(1.1)';
+    });
+    helpButton.addEventListener('mouseleave', function() {
+      this.style.background = 'rgba(0,123,255,0.1)';
+      this.style.color = 'var(--accent)';
+      this.style.transform = 'scale(1)';
+    });
+    
+    document.body.appendChild(helpButton);
+  }
+
+  function showKeyboardShortcuts() {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 10001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+      " onclick="this.remove()">
+        <div style="
+          background: var(--container-light);
+          border-radius: 20px;
+          padding: 30px;
+          max-width: 500px;
+          width: 90%;
+          box-shadow: 0 20px 100px rgba(0,0,0,0.3);
+          animation: slideInUp 0.3s ease;
+        " onclick="event.stopPropagation()" class="shortcut-modal">
+          <h3 style="
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          ">
+            <span class="material-icons">keyboard</span>
+            Keyboard Shortcuts
+          </h3>
+          
+          <div style="display: grid; gap: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+              <span style="font-weight: 600;">Focus search</span>
+              <kbd style="padding: 4px 8px; background: #f0f0f0; border-radius: 4px; font-family: monospace;">Ctrl + K</kbd>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+              <span style="font-weight: 600;">Submit lookup</span>
+              <kbd style="padding: 4px 8px; background: #f0f0f0; border-radius: 4px; font-family: monospace;">Ctrl + Enter</kbd>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+              <span style="font-weight: 600;">New lookup</span>
+              <kbd style="padding: 4px 8px; background: #f0f0f0; border-radius: 4px; font-family: monospace;">Ctrl + R</kbd>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+              <span style="font-weight: 600;">Export data</span>
+              <kbd style="padding: 4px 8px; background: #f0f0f0; border-radius: 4px; font-family: monospace;">Ctrl + S</kbd>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+              <span style="font-weight: 600;">Close/Reset</span>
+              <kbd style="padding: 4px 8px; background: #f0f0f0; border-radius: 4px; font-family: monospace;">Escape</kbd>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+              <span style="font-weight: 600;">Country codes</span>
+              <kbd style="padding: 4px 8px; background: #f0f0f0; border-radius: 4px; font-family: monospace;">Alt + [1-9]</kbd>
+            </div>
+          </div>
+          
+          <button onclick="this.closest('.shortcut-modal').parentElement.remove()" style="
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+          " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+            Got it!
+          </button>
+        </div>
+      </div>
+      
+      <style>
+        .dark-theme .shortcut-modal {
+          background: var(--container-dark) !important;
+          color: var(--text-dark) !important;
+        }
+        
+        .dark-theme kbd {
+          background: #444 !important;
+          color: #fff !important;
+        }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      </style>
+    `;
+    
+    document.body.appendChild(modal);
+    trackPhoneEvent('keyboard_shortcuts_viewed');
+  }
+
+  // Advanced phone number suggestions
+  function showPhoneSuggestions(input) {
+    const suggestions = [
+      '+1 (555) 123-4567', // US format
+      '+44 20 7946 0958',  // UK format
+      '+91 98765 43210',   // India format
+      '+86 138 0013 8000', // China format
+      '+33 1 42 86 83 26', // France format
+      '+49 30 12345678',   // Germany format
+      '+81 3-1234-5678',   // Japan format
+      '+7 495 123-45-67'   // Russia format
+    ];
+    
+    if (input.length > 0) {
+      const filtered = suggestions.filter(s => s.replace(/\D/g, '').includes(input.replace(/\D/g, '')));
+      if (filtered.length > 0) {
+        showSuggestionDropdown(filtered);
+      }
+    }
+  }
+
+  function showSuggestionDropdown(suggestions) {
+    let dropdown = document.getElementById('phoneSuggestions');
+    if (!dropdown) {
+      dropdown = document.createElement('div');
+      dropdown.id = 'phoneSuggestions';
+      dropdown.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--container-light);
+        border: 2px solid var(--accent);
+        border-radius: 8px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        z-index: 1000;
+        max-height: 200px;
+        overflow-y: auto;
+      `;
+      phoneInput.parentElement.style.position = 'relative';
+      phoneInput.parentElement.appendChild(dropdown);
+    }
+    
+    dropdown.innerHTML = suggestions.map(suggestion => `
+      <div style="
+        padding: 12px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      " 
+      onmouseover="this.style.background='rgba(0,123,255,0.1)'"
+      onmouseout="this.style.background='transparent'"
+      onclick="selectSuggestion('${suggestion}')">
+        <span class="material-icons" style="color: var(--accent); font-size: 18px;">phone</span>
+        <span>${suggestion}</span>
+      </div>
+    `).join('');
+  }
+
+  function selectSuggestion(suggestion) {
+    phoneInput.value = suggestion;
+    document.getElementById('phoneSuggestions').remove();
+    phoneInput.focus();
+    trackPhoneEvent('suggestion_selected', { suggestion });
+  }
+
+  // Hide suggestions when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!phoneInput.contains(e.target)) {
+      const dropdown = document.getElementById('phoneSuggestions');
+      if (dropdown) dropdown.remove();
+    }
+  });
+
+  // Performance monitoring
+  function monitorPerformance() {
+    if (typeof PerformanceObserver !== 'undefined') {
+      const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach((entry) => {
+          if (entry.entryType === 'navigation') {
+            trackPhoneEvent('performance_navigation', {
+              load_time: entry.loadEventEnd - entry.loadEventStart,
+              dom_ready: entry.domContentLoadedEventEnd - entry.loadEventStart,
+              first_paint: entry.responseEnd - entry.requestStart
+            });
+          }
+        });
+      });
+      
+      try {
+        observer.observe({ entryTypes: ['navigation', 'paint', 'measure'] });
+      } catch (e) {
+        console.warn('Performance monitoring not fully supported');
+      }
+    }
+  }
+
+  // Initialize performance monitoring
+  monitorPerformance();
+
+  // Service Worker registration for offline capabilities
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('SW registered successfully');
+        trackPhoneEvent('service_worker_registered');
+      })
+      .catch(err => {
+        console.log('SW registration failed');
+      });
+  }
+</script>
+
+<!-- Enhanced Starfield Animation (matching email_verify.html exactly) -->
+<script>
+(function() {
+  const canvas = document.getElementById("starfield");
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext("2d");
+  let stars = [], w, h, animationId;
+  let lastTime = 0;
+  const targetFPS = 60;
+  const frameTime = 1000 / targetFPS;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    stars = [];
+    
+    // Create enhanced stars with varying properties
+    for (let i = 0; i < 250; i++) {
+      stars.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.5 + 0.3,
+        dx: 0.02 + Math.random() * 0.05,
+        dy: (Math.random() - 0.5) * 0.03,
+        opacity: Math.random() * 0.6 + 0.2,
+        twinkle: Math.random() * 0.02 + 0.01,
+        twinklePhase: Math.random() * Math.PI * 2,
+        color: Math.random() > 0.95 ? `hsl(${Math.random() * 60 + 180}, 100%, 80%)` : 'white'
+      });
+    }
+  }
+
+  function draw(currentTime) {
+    if (currentTime - lastTime < frameTime) {
+      animationId = requestAnimationFrame(draw);
+      return;
+    }
+    
+    if (!ctx || !document.body.classList.contains('dark-theme')) {
+      animationId = requestAnimationFrame(draw);
+      return;
+    }
+    
+    lastTime = currentTime;
+    ctx.clearRect(0, 0, w, h);
+    
+    stars.forEach(s => {
+      s.twinklePhase += s.twinkle;
+      const twinkleOpacity = s.opacity + Math.sin(s.twinklePhase) * 0.3;
+      
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      
+      if (s.color === 'white') {
+        ctx.fillStyle = `rgba(255,255,255,${Math.max(0, Math.min(1, twinkleOpacity))})`;
+      } else {
+        ctx.fillStyle = s.color.replace('80%', `${Math.max(0, Math.min(80, twinkleOpacity * 80))}%`);
+      }
+      
+      ctx.fill();
+
+      // Add glow effect for special stars
+      if (s.color !== 'white' && twinkleOpacity > 0.7) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
+        ctx.fillStyle = s.color.replace('80%', '20%').replace('100%', '50%');
+        ctx.fill();
+      }
+
+      s.x += s.dx;
+      s.y += s.dy;
+
+      if (s.x > w + s.r) s.x = -s.r;
+      if (s.x < -s.r) s.x = w + s.r;
+      if (s.y > h + s.r) s.y = -s.r;
+      if (s.y < -s.r) s.y = h + s.r;
+    });
+    
+    animationId = requestAnimationFrame(draw);
+  }
+
+  function startAnimation() {
+    if (animationId) cancelAnimationFrame(animationId);
+    animationId = requestAnimationFrame(draw);
+  }
+
+  function stopAnimation() {
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+    if (ctx) ctx.clearRect(0, 0, w, h);
+  }
+
+  // Event listeners
+  let resizeTimeout;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(resize, 250);
+  });
+
+  // Theme change detection
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        if (document.body.classList.contains('dark-theme')) {
+          startAnimation();
+        } else {
+          stopAnimation();
+        }
+      }
+    });
+  });
+
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
+
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      stopAnimation();
+    } else if (document.body.classList.contains('dark-theme')) {
+      startAnimation();
+    }
+  });
+
+  // Mouse interaction with stars
+  let mousePos = { x: 0, y: 0 };
+  canvas.addEventListener('mousemove', function(e) {
+    mousePos.x = e.clientX;
+    mousePos.y = e.clientY;
+    
+    // Add interactive effect - stars move away from cursor
+    stars.forEach(star => {
+      const distance = Math.sqrt(
+        Math.pow(star.x - mousePos.x, 2) + 
+        Math.pow(star.y - mousePos.y, 2)
+      );
+      
+      if (distance < 100) {
+        const angle = Math.atan2(star.y - mousePos.y, star.x - mousePos.x);
+        const force = Math.max(0, 50 - distance) * 0.002;
+        star.dx += Math.cos(angle) * force;
+        star.dy += Math.sin(angle) * force;
+        
+        // Limit velocity
+        const maxVel = 0.1;
+        if (Math.abs(star.dx) > maxVel) star.dx = Math.sign(star.dx) * maxVel;
+        if (Math.abs(star.dy) > maxVel) star.dy = Math.sign(star.dy) * maxVel;
+      } else {
+        // Reset velocity gradually
+        star.dx *= 0.98;
+        star.dy *= 0.98;
+      }
+    });
+  });
+
+  // Add shooting stars occasionally
+  let shootingStars = [];
+  
+  function createShootingStar() {
+    if (Math.random() < 0.001 && document.body.classList.contains('dark-theme')) {
+      shootingStars.push({
+        x: Math.random() * w,
+        y: 0,
+        dx: (Math.random() - 0.5) * 4,
+        dy: Math.random() * 3 + 2,
+        length: Math.random() * 80 + 20,
+        opacity: 1,
+        life: 60
+      });
+    }
+  }
+
+  function drawShootingStars() {
+    shootingStars.forEach((star, index) => {
+      if (star.life <= 0) {
+        shootingStars.splice(index, 1);
+        return;
+      }
+      
+      ctx.save();
+      ctx.globalAlpha = star.opacity;
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      
+      // Create gradient trail
+      const gradient = ctx.createLinearGradient(
+        star.x, star.y, 
+        star.x - star.dx * star.length, star.y - star.dy * star.length
+      );
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.strokeStyle = gradient;
+      
+      ctx.beginPath();
+      ctx.moveTo(star.x, star.y);
+      ctx.lineTo(star.x - star.dx * star.length, star.y - star.dy * star.length);
+      ctx.stroke();
+      
+      ctx.restore();
+      
+      star.x += star.dx;
+      star.y += star.dy;
+      star.life--;
+      star.opacity = star.life / 60;
+    });
+  }
+
+  // Enhanced draw function with shooting stars
+  function drawEnhanced(currentTime) {
+    if (currentTime - lastTime < frameTime) {
+      animationId = requestAnimationFrame(drawEnhanced);
+      return;
+    }
+    
+    if (!ctx || !document.body.classList.contains('dark-theme')) {
+      animationId = requestAnimationFrame(drawEnhanced);
+      return;
+    }
+    
+    lastTime = currentTime;
+    ctx.clearRect(0, 0, w, h);
+    
+    // Draw regular stars
+    stars.forEach(s => {
+      s.twinklePhase += s.twinkle;
+      const twinkleOpacity = s.opacity + Math.sin(s.twinklePhase) * 0.3;
+      
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      
+      if (s.color === 'white') {
+        ctx.fillStyle = `rgba(255,255,255,${Math.max(0, Math.min(1, twinkleOpacity))})`;
+      } else {
+        ctx.fillStyle = s.color.replace('80%', `${Math.max(0, Math.min(80, twinkleOpacity * 80))}%`);
+      }
+      
+      ctx.fill();
+
+      // Add glow effect for special stars
+      if (s.color !== 'white' && twinkleOpacity > 0.7) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
+        ctx.fillStyle = s.color.replace('80%', '20%').replace('100%', '50%');
+        ctx.fill();
+      }
+
+      s.x += s.dx;
+      s.y += s.dy;
+
+      if (s.x > w + s.r) s.x = -s.r;
+      if (s.x < -s.r) s.x = w + s.r;
+      if (s.y > h + s.r) s.y = -s.r;
+      if (s.y < -s.r) s.y = h + s.r;
+    });
+    
+    // Create and draw shooting stars
+    createShootingStar();
+    drawShootingStars();
+    
+    animationId = requestAnimationFrame(drawEnhanced);
+  }
+
+  // Update start animation function to use enhanced draw
+  function startAnimationEnhanced() {
+    if (animationId) cancelAnimationFrame(animationId);
+    animationId = requestAnimationFrame(drawEnhanced);
+  }
+
+  // Initialize with enhanced features
+  resize();
+  if (document.body.classList.contains('dark-theme')) {
+    startAnimationEnhanced();
+  }
+
+  // Update observer to use enhanced animation
+  const enhancedObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        if (document.body.classList.contains('dark-theme')) {
+          startAnimationEnhanced();
+        } else {
+          stopAnimation();
+        }
+      }
+    });
+  });
+
+  enhancedObserver.observe(document.body, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
+
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      stopAnimation();
+    } else if (document.body.classList.contains('dark-theme')) {
+      startAnimationEnhanced();
+    }
+  });
+
+  // Add constellation patterns occasionally
+  function drawConstellations() {
+    if (Math.random() < 0.0001) {
+      const centerX = Math.random() * w;
+      const centerY = Math.random() * h;
+      const numStars = 3 + Math.floor(Math.random() * 5);
+      
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([5, 5]);
+      
+      for (let i = 0; i < numStars - 1; i++) {
+        const angle1 = (i / numStars) * Math.PI * 2;
+        const angle2 = ((i + 1) / numStars) * Math.PI * 2;
+        const radius = 50 + Math.random() * 100;
+        
+        const x1 = centerX + Math.cos(angle1) * radius;
+        const y1 = centerY + Math.sin(angle1) * radius;
+        const x2 = centerX + Math.cos(angle2) * radius;
+        const y2 = centerY + Math.sin(angle2) * radius;
+        
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
+      
+      ctx.restore();
+    }
+  }
+
+  // Add nebula effect
+  function drawNebula() {
+    if (Math.random() < 0.00001) {
+      const x = Math.random() * w;
+      const y = Math.random() * h;
+      const size = 100 + Math.random() * 200;
+      
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+      const hue = Math.random() * 360;
+      gradient.addColorStop(0, `hsla(${hue}, 100%, 50%, 0.1)`);
+      gradient.addColorStop(0.5, `hsla(${hue + 30}, 80%, 60%, 0.05)`);
+      gradient.addColorStop(1, 'transparent');
+      
+      ctx.save();
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x - size, y - size, size * 2, size * 2);
+      ctx.restore();
+    }
+  }
+})();
+</script>
+<!-- Progressive Web App Features -->
+<script>
+// Add to home screen prompt
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  // Show install button after user has used the app
+  setTimeout(() => {
+    if (deferredPrompt) {
+      const installBtn = document.createElement('button');
+      installBtn.innerHTML = `
+        <span class="material-icons">get_app</span>
+        Install App
+      `;
+      installBtn.style.cssText = `
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        z-index: 1000;
+      `;
+      
+      installBtn.addEventListener('click', async () => {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        trackPhoneEvent('install_prompt_result', { outcome });
+        deferredPrompt = null;
+        installBtn.remove();
+      });
+      
+      document.body.appendChild(installBtn);
+    }
+  }, 10000); // Show after 10 seconds of usage
+});
+
+// Track app installation
+window.addEventListener('appinstalled', () => {
+  trackPhoneEvent('app_installed');
+});
+
+// Handle online/offline status
+window.addEventListener('online', () => {
+  showNotification('Connection restored', 'success');
+});
+
+window.addEventListener('offline', () => {
+  showNotification('Working offline', 'warning');
+});
+</script>
+
+<!-- Final initialization and cleanup -->
+<script>
+// Final app initialization
+document.addEventListener('DOMContentLoaded', function() {
+  // Mark app as fully loaded
+  setTimeout(() => {
+    document.body.classList.add('app-loaded');
+    trackPhoneEvent('app_fully_loaded', {
+      total_load_time: performance.now()
+    });
+  }, 100);
+  
+  // Cleanup function
+  window.addEventListener('beforeunload', function() {
+    if (typeof trackPhoneEvent === 'function') {
+      trackPhoneEvent('page_unload');
+    }
+  });
+});
+
+// Error boundary for the entire app
+window.addEventListener('error', (e) => {
+  console.error('Phone lookup app error:', e.error);
+  showNotification('An unexpected error occurred. Please refresh the page.', 'error');
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('Unhandled promise rejection:', e.reason);
+  showNotification('A network error occurred. Please check your connection.', 'error');
+});
+</script>
+
+</body>
+</html>

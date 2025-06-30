@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON View - {{ domain }} | Webyverse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --container-light: #ffffff;
+            --container-dark: #1e1e1e;
+            --text-light: #212529;
+            --text-dark: #e4e6eb;
+            --accent: #007bff;
+            --card-light: #f8f9fa;
+            --card-dark: #252525;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: linear-gradient(-45deg, #ffffff, #dfe9f3, #c0d3f2, #ffffff);
+            background-size: 300% 300%;
+            animation: bgMove 10s ease-in-out infinite;
+            margin: 0;
+            padding: 20px;
+            color: var(--text-light);
+        }
+
+        .dark-theme {
+            background: linear-gradient(-45deg, #1a1a1a, #202533, #2b2f3a, #1f1f1f);
+            color: var(--text-dark);
+        }
+
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--container-light);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .dark-theme .container {
+            background: var(--container-dark);
+        }
+
+        .header {
+            background: var(--accent);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .json-container {
+            padding: 0;
+            background: #1e1e1e;
+            color: #f8f8f2;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .json-content {
+            padding: 20px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .error {
+            padding: 20px;
+            text-align: center;
+            color: #dc3545;
+        }
+
+        .floating-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background-color: var(--accent);
+            color: white;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        /* JSON Syntax Highlighting */
+        .json-key { color: #66d9ef; }
+        .json-string { color: #a6e22e; }
+        .json-number { color: #ae81ff; }
+        .json-boolean { color: #fd971f; }
+        .json-null { color: #f92672; }
+    </style>
+</head>
+<body>
+    <button class="floating-toggle" id="themeToggle">🌙</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>JSON Data - {{ domain }}</h1>
+            <a href="/" class="btn">← Back to Analyzer</a>
+        </div>
+        
+        {% if error %}
+            <div class="error">
+                <h2>Error</h2>
+                <p>{{ error }}</p>
+            </div>
+        {% else %}
+            <div class="json-container">
+                <div class="json-content" id="jsonContent">{{ json_data }}</div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Theme toggle
+        const toggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        const updateThemeToggle = () => {
+            const isDark = body.classList.contains('dark-theme');
+            toggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDark);
+        };
+        
+        toggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            updateThemeToggle();
+        });
+        
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-theme');
+        }
+        updateThemeToggle();
+
+        // Simple JSON syntax highlighting
+        function highlightJSON() {
+            const content = document.getElementById('jsonContent');
+            if (!content) return;
+            
+            let html = content.innerHTML;
+            html = html.replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:');
+            html = html.replace(/: "([^"]*)"/g, ': <span class="json-string">"$1"</span>');
+            html = html.replace(/: (\d+\.?\d*)/g, ': <span class="json-number">$1</span>');
+            html = html.replace(/: (true|false)/g, ': <span class="json-boolean">$1</span>');
+            html = html.replace(/: null/g, ': <span class="json-null">null</span>');
+            content.innerHTML = html;
+        }
+        
+        highlightJSON();
+    </script>
+</body>
+</html>

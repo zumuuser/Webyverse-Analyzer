@@ -1,0 +1,14 @@
+Flask
+requests
+dnspython
+whois
+beautifulsoup4
+ipwhois
+urllib3
+builtwith
+fpdf2
+phonenumbers
+email-validator
+matplotlib
+pytz
+werkzeug
