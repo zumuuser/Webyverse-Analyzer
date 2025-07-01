@@ -11,6 +11,7 @@ import whois
 import urllib3
 import re
 import matplotlib.pyplot as plt  # For graphing (ensure you have this installed)
+import random # Add this import at the top
 import re
 import socket
 import smtplib
@@ -77,8 +78,13 @@ def make_session(retries=3, backoff=1.0):
     session.mount('https://', adapter)
     return session
 
-def fetch_url(url, method='get', timeout=15, headers=None, verify=True):
-    hdrs = headers or DEFAULT_HEADERS
+def fetch_url(url, method='get', timeout=30, headers=None, verify=True): # Use your chosen timeout here (e.g., 30)
+    # Create a mutable copy of DEFAULT_HEADERS or use the provided headers
+    hdrs = headers.copy() if headers else DEFAULT_HEADERS.copy()
+
+    # Assign a random User-Agent for this specific request
+    hdrs["User-Agent"] = random.choice(USER_AGENTS)
+
     sess = make_session()
     try:
         if method.lower() == 'head':
@@ -86,8 +92,9 @@ def fetch_url(url, method='get', timeout=15, headers=None, verify=True):
                              allow_redirects=True, verify=verify)
         return sess.get(url, timeout=timeout, headers=hdrs,
                         allow_redirects=True, verify=verify)
-    except Exception:
+    except Exception: # Consider making this more specific as discussed in point 5
         if verify:
+            # When retrying with verify=False, ensure the new call also gets a random UA
             return fetch_url(url, method, timeout, headers, False)
         return None
 
