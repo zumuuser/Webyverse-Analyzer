@@ -77,7 +77,7 @@ def make_session(retries=3, backoff=1.0):
     session.mount('https://', adapter)
     return session
 
-        def fetch_url(url, method='get', timeout=15, headers=None, verify=True): # Note: I've changed timeout to 30 in my example, adjust as you did
+def fetch_url(url, method='get', timeout=15, headers=None, verify=True):
     hdrs = headers or DEFAULT_HEADERS
     sess = make_session()
     try:
@@ -90,7 +90,6 @@ def make_session(retries=3, backoff=1.0):
         if verify:
             return fetch_url(url, method, timeout, headers, False)
         return None
-
 
 def normalize_domain_input(domain_input):
     """Enhanced domain input normalization to handle all formats"""
