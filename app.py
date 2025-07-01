@@ -11,7 +11,6 @@ import whois
 import urllib3
 import re
 import matplotlib.pyplot as plt  # For graphing (ensure you have this installed)
-import random # Add this import at the top
 import re
 import socket
 import smtplib
@@ -78,25 +77,20 @@ def make_session(retries=3, backoff=1.0):
     session.mount('https://', adapter)
     return session
 
-        def fetch_url(url, method='get', timeout=30, headers=None, verify=True): # Use your chosen timeout here (e.g., 30)
-            # Create a mutable copy of DEFAULT_HEADERS or use the provided headers
-            hdrs = headers.copy() if headers else DEFAULT_HEADERS.copy() # <--- This line is crucial
+        def fetch_url(url, method='get', timeout=15, headers=None, verify=True): # Note: I've changed timeout to 30 in my example, adjust as you did
+    hdrs = headers or DEFAULT_HEADERS
+    sess = make_session()
+    try:
+        if method.lower() == 'head':
+            return sess.head(url, timeout=timeout, headers=hdrs,
+                             allow_redirects=True, verify=verify)
+        return sess.get(url, timeout=timeout, headers=hdrs,
+                        allow_redirects=True, verify=verify)
+    except Exception:
+        if verify:
+            return fetch_url(url, method, timeout, headers, False)
+        return None
 
-            # Assign a random User-Agent for this specific request
-            hdrs["User-Agent"] = random.choice(USER_AGENTS) # <--- This line is crucial
-
-            sess = make_session()
-            try:
-                if method.lower() == 'head':
-                    return sess.head(url, timeout=timeout, headers=hdrs,
-                                     allow_redirects=True, verify=verify)
-                return sess.get(url, timeout=timeout, headers=hdrs,
-                                allow_redirects=True, verify=verify)
-            except Exception:
-                if verify:
-                    return fetch_url(url, method, timeout, headers, False)
-                return None
-        
 
 def normalize_domain_input(domain_input):
     """Enhanced domain input normalization to handle all formats"""
